@@ -24,6 +24,8 @@ public class MainPageActivity extends AppCompatActivity {
 
     public void about(View view) {
         Log.v(TAG, "about");
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
     }
 
     public void exit(View view) {
