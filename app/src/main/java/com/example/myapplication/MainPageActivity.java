@@ -28,5 +28,6 @@ public class MainPageActivity extends AppCompatActivity {
 
     public void exit(View view) {
         Log.v(TAG, "exit");
+        this.finish();
     }
 }

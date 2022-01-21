@@ -10,13 +10,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication.NoActionBar"
         >
-        <activity android:name=".GameActivity" />
-        <activity android:name=".MainPageActivity" >
+        <activity
+            android:name=".GameActivity"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name=".MainPageActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>>
+        </activity>
     </application>
 
 </manifest>
