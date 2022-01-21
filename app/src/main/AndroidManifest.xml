@@ -10,7 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity android:name=".GameActivity" />
-        <activity android:name=".MainPageActivity" />
+        <activity android:name=".MainPageActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>>
     </application>
 
 </manifest>
