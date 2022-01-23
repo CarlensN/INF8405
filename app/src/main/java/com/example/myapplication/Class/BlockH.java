@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 
 public class BlockH extends Block {
     float offsetX = 0; //block position
+    float x = 0;
     public BlockH(Context context, int nUnits) {
         super(context);
         this.setLayoutParams(new RelativeLayout.LayoutParams(nUnits * BLOCK_SIZE , BLOCK_SIZE));
@@ -14,14 +15,14 @@ public class BlockH extends Block {
 
     @Override
     protected void touchDown(MotionEvent motionEvent) {
-        this.offsetX = motionEvent.getX() - this.getTranslationX();
-        Log.d("TOUCHMOVE", Float.toString(motionEvent.getX()));
-        Log.d("TOUCHMOVE", Float.toString(this.getTranslationX()));
+        this.offsetX = motionEvent.getX();
+        this.x = this.getTranslationX();
+        Log.d("TOUCHDOWN", Float.toString(motionEvent.getX()));
     }
 
     @Override
     public void touchMove(MotionEvent motionEvent) {
-
-        this.setTranslationX(motionEvent.getX() + offsetX);
+        x += motionEvent.getX() - this.offsetX;
+        this.setTranslationX(x);
     }
 }
