@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".GameActivity">
@@ -99,8 +100,8 @@
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <fragment
-            android:id="@+id/grid_layout"
+        <RelativeLayout
+            android:id="@+id/gameContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="20dp"
@@ -114,7 +115,7 @@
             app:layout_constraintTop_toBottomOf="@+id/puzzle_level"
             tools:ignore="MissingConstraints"
             android:name="com.example.myapplication.LevelFragment">
-        </fragment>
+        </RelativeLayout>
 
         <Button
             android:id="@+id/pause_button"
@@ -126,7 +127,6 @@
             android:text="Pause"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/grid_layout"
             tools:ignore="UsingOnClickInXml" />
 
         <Button
@@ -137,8 +137,7 @@
             android:layout_marginEnd="20dp"
             android:text="Redo"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button4"
-            app:layout_constraintTop_toBottomOf="@+id/grid_layout" />
+            app:layout_constraintEnd_toStartOf="@+id/button4"/>
 
         <Button
             android:id="@+id/button4"
@@ -148,8 +147,7 @@
             android:layout_marginEnd="20dp"
             android:text="Reset"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/grid_layout" />
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
