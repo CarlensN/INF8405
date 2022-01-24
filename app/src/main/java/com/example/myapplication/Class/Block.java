@@ -10,9 +10,7 @@ import android.view.View;
 import com.example.myapplication.R;
 
 public abstract class Block extends androidx.appcompat.widget.AppCompatImageView {
-    public final int BLOCK_SIZE = 100;
-    public int p1 = 0;
-    public int p2 = 0;
+    public int BLOCK_SIZE = 100;
     @SuppressLint("ClickableViewAccessibility")
     public Block(Context context) {
         super(context);

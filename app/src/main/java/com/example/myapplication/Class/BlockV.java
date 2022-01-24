@@ -7,9 +7,9 @@ import android.widget.RelativeLayout;
 public class BlockV extends Block{
     float y = 0;
     float offsetY = 0;
-    public BlockV(Context context,int nUnits) {
+    public BlockV(Context context,int nUnits, int blockSize) {
         super(context);
-        this.setLayoutParams(new RelativeLayout.LayoutParams(BLOCK_SIZE, nUnits * BLOCK_SIZE));
+        this.setLayoutParams(new RelativeLayout.LayoutParams(blockSize, nUnits * blockSize));
     }
 
     @Override

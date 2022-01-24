@@ -3,10 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/cnere/Documents/School/Session Hiver 2022/INF8405 - Informatique Mobile/Travaux Pratiques/INF8405/app/src/main/res/drawable/block.xml" value="0.36302083333333335" />
         <entry key="..\:/Users/cnere/Documents/School/Session Hiver 2022/INF8405 - Informatique Mobile/Travaux Pratiques/INF8405/app/src/main/res/layout/activity_about.xml" value="0.33" />
         <entry key="..\:/Users/cnere/Documents/School/Session Hiver 2022/INF8405 - Informatique Mobile/Travaux Pratiques/INF8405/app/src/main/res/layout/activity_game.xml" value="0.28940217391304346" />
-        <entry key="..\:/Users/cnere/Documents/School/Session Hiver 2022/INF8405 - Informatique Mobile/Travaux Pratiques/INF8405/app/src/main/res/layout/activity_main_page.xml" value="0.3625" />
-        <entry key="..\:/Users/cnere/Documents/School/Session Hiver 2022/INF8405 - Informatique Mobile/Travaux Pratiques/INF8405/app/src/main/res/layout/fragment_level.xml" value="0.3484375" />
+        <entry key="..\:/Users/cnere/Documents/School/Session Hiver 2022/INF8405 - Informatique Mobile/Travaux Pratiques/INF8405/app/src/main/res/layout/fragment_level.xml" value="0.3125" />
       </map>
     </option>
   </component>
