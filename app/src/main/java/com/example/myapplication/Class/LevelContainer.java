@@ -1,6 +1,7 @@
 package com.example.myapplication.Class;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
@@ -8,22 +9,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class LevelContainer extends RelativeLayout {
     private int _currentLevel;
     private int _minMoves;
     private int _record;
     private BlockFactory blockFactory;
-
-    public LevelContainer(Context context) {
-        super(context);
-        blockFactory = new BlockFactory(context);
-    }
+    private ArrayList<Point> boundaries;
+    private LevelMediator levelMediator;
 
     public LevelContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
         blockFactory = new BlockFactory(context);
     }
+    
 
     public void generateLevel(int id) throws IOException {
         InputStream is = getResources().openRawResource(id);
@@ -53,7 +53,11 @@ public class LevelContainer extends RelativeLayout {
         this.addView(block);
         block.setTranslationX(x*blockFactory.getBlockSize());
         block.setTranslationY(y*blockFactory.getBlockSize());
+        block.setLevelMediator(levelMediator);
+        levelMediator.blocks.add(block);
     }
 
-
+    public void setLevelMediator(LevelMediator levelMediator) {
+        this.levelMediator = levelMediator;
+    }
 }

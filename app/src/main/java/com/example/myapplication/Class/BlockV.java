@@ -9,6 +9,7 @@ public class BlockV extends Block{
     float offsetY = 0;
     public BlockV(Context context,int nUnits, int blockSize) {
         super(context,blockSize);
+        this.nUnits = nUnits;
         this.setLayoutParams(new RelativeLayout.LayoutParams(blockSize, nUnits * blockSize));
     }
 
@@ -21,7 +22,13 @@ public class BlockV extends Block{
     @Override
     public void touchMove(MotionEvent motionEvent) {
         y += motionEvent.getY() - this.offsetY;
+        if(y < blockSize){
+            y = blockSize;
+        }else if(y + (nUnits -1) *blockSize > 6 * blockSize){
+            y = 6 * blockSize - (nUnits - 1) * blockSize;
+        }
         this.setTranslationY(y);
+
     }
 
     @Override

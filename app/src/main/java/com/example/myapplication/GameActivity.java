@@ -9,6 +9,7 @@ import java.io.IOException;
 
 
 import com.example.myapplication.Class.LevelContainer;
+import com.example.myapplication.Class.LevelMediator;
 
 public class GameActivity extends AppCompatActivity {
     LevelContainer levelContainer = null;
@@ -18,6 +19,13 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         levelContainer = findViewById(R.id.levelContainer);
+        initMediator();
+
+    }
+    public void initMediator(){
+        LevelMediator levelMediator = new LevelMediator();
+        levelMediator.setLevelContainer(levelContainer);
+        levelContainer.setLevelMediator(levelMediator);
     }
 
     @Override
