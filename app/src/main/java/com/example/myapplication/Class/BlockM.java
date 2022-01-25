@@ -10,15 +10,18 @@ public class BlockM extends BlockH {
         super(context, nUnits, blockSize);
         this.setImageDrawable(getResources().getDrawable(R.drawable.main_block));
     }
+
     @Override
     public void touchMove(MotionEvent motionEvent) {
         x += motionEvent.getX() - this.offsetX;
-        if(x < blockSize){
+        if(x < blockSize) {
             x = blockSize;
         }else if(x + (nUnits -1) *blockSize > 6 * blockSize){
-            x = 6 * blockSize - (nUnits - 1) * blockSize;
+            win();
         }
         this.setTranslationX(x);
+    }
 
+    private void win() {
     }
 }
