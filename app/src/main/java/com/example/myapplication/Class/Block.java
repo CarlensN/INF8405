@@ -10,14 +10,14 @@ import android.view.View;
 import com.example.myapplication.R;
 
 public abstract class Block extends androidx.appcompat.widget.AppCompatImageView {
-    public int BLOCK_SIZE = 100;
+    int blockSize;
     @SuppressLint("ClickableViewAccessibility")
-    public Block(Context context) {
+    public Block(Context context, int blockSize) {
         super(context);
+        this.blockSize = blockSize;
         this.setImageDrawable(getResources().getDrawable(R.drawable.block));
         this.setOnTouchListener(new OnTouchBlockListener());
     }
-
     public class OnTouchBlockListener implements OnTouchListener {
         public static final String DEBUG_TAG = "ON_TOUCH_BLOCK" ;
         @Override
@@ -25,14 +25,13 @@ public abstract class Block extends androidx.appcompat.widget.AppCompatImageView
             final int action = motionEvent.getActionMasked();
             switch (action) {
                 case (MotionEvent.ACTION_DOWN):
-                    Log.d(DEBUG_TAG, "Action was DOWN");
                     touchDown(motionEvent);
                     return true;
                 case (MotionEvent.ACTION_MOVE):
                     touchMove(motionEvent);
                     return true;
                 case (MotionEvent.ACTION_UP):
-                    Log.d(DEBUG_TAG, "Action was UP");
+                    touchUp(motionEvent);
                     return true;
                 case (MotionEvent.ACTION_CANCEL):
                     Log.d(DEBUG_TAG, "Action was CANCEL");
@@ -49,7 +48,7 @@ public abstract class Block extends androidx.appcompat.widget.AppCompatImageView
 
     protected abstract void touchDown(MotionEvent motionEvent);
     protected abstract void touchMove(MotionEvent motionEvent);
-
+    protected abstract void touchUp(MotionEvent motionEvent);
 
 }
 

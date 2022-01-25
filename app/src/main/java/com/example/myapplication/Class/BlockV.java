@@ -8,7 +8,7 @@ public class BlockV extends Block{
     float y = 0;
     float offsetY = 0;
     public BlockV(Context context,int nUnits, int blockSize) {
-        super(context);
+        super(context,blockSize);
         this.setLayoutParams(new RelativeLayout.LayoutParams(blockSize, nUnits * blockSize));
     }
 
@@ -22,5 +22,11 @@ public class BlockV extends Block{
     public void touchMove(MotionEvent motionEvent) {
         y += motionEvent.getY() - this.offsetY;
         this.setTranslationY(y);
+    }
+
+    @Override
+    protected void touchUp(MotionEvent motionEvent) {
+        float adjustmentY = Math.round(y /blockSize) *blockSize;
+        this.setTranslationY(adjustmentY);
     }
 }
