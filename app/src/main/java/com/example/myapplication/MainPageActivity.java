@@ -22,12 +22,6 @@ public class MainPageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void about(View view) {
-        Log.v(TAG, "about");
-        Intent intent = new Intent(this, AboutActivity.class);
-        startActivity(intent);
-    }
-
     public void exit(View view) {
         Log.v(TAG, "exit");
         this.finish();

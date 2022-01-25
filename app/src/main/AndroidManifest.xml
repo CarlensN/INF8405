@@ -10,9 +10,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication.NoActionBar">
         <activity
-            android:name=".AboutActivity"
-            android:exported="false" />
-        <activity
             android:name=".GameActivity"
             android:launchMode="singleTop" />
         <activity
