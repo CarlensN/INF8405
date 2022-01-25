@@ -3,19 +3,16 @@ package com.example.myapplication.Class;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Point;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.myapplication.R;
 
-import java.util.ArrayList;
-
 public abstract class Block extends androidx.appcompat.widget.AppCompatImageView {
     int blockSize;
     int nUnits = 0;
-    LevelMediator levelMediator;
+    LevelPresenter levelPresenter;
     @SuppressLint("ClickableViewAccessibility")
     public Block(Context context, int blockSize) {
         super(context);
@@ -51,8 +48,8 @@ public abstract class Block extends androidx.appcompat.widget.AppCompatImageView
         }
     }
 
-    public void setLevelMediator(LevelMediator levelMediator) {
-        this.levelMediator = levelMediator;
+    public void setLevelPresenter(LevelPresenter levelPresenter) {
+        this.levelPresenter = levelPresenter;
     }
 
     protected abstract void touchDown(MotionEvent motionEvent);

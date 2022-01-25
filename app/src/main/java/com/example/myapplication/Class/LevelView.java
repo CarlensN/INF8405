@@ -11,15 +11,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class LevelContainer extends RelativeLayout {
+public class LevelView extends RelativeLayout {
     private int _currentLevel;
     private int _minMoves;
     private int _record;
     private BlockFactory blockFactory;
     private ArrayList<Point> boundaries;
-    private LevelMediator levelMediator;
+    private LevelPresenter levelPresenter;
 
-    public LevelContainer(Context context, AttributeSet attrs) {
+    public LevelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         blockFactory = new BlockFactory(context);
     }
@@ -53,11 +53,11 @@ public class LevelContainer extends RelativeLayout {
         this.addView(block);
         block.setTranslationX(x*blockFactory.getBlockSize());
         block.setTranslationY(y*blockFactory.getBlockSize());
-        block.setLevelMediator(levelMediator);
-        levelMediator.blocks.add(block);
+        block.setLevelPresenter(levelPresenter);
+        levelPresenter.blocks.add(block);
     }
 
-    public void setLevelMediator(LevelMediator levelMediator) {
-        this.levelMediator = levelMediator;
+    public void setLevelPresenter(LevelPresenter levelPresenter) {
+        this.levelPresenter = levelPresenter;
     }
 }

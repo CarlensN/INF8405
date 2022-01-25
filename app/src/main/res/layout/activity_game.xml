@@ -100,8 +100,8 @@
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.example.myapplication.Class.LevelContainer
-            android:id="@+id/levelContainer"
+        <com.example.myapplication.Class.LevelView
+            android:id="@+id/levelView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="48dp"

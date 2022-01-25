@@ -8,32 +8,26 @@ import android.view.View;
 import java.io.IOException;
 
 
-import com.example.myapplication.Class.LevelContainer;
-import com.example.myapplication.Class.LevelMediator;
+import com.example.myapplication.Class.LevelView;
+import com.example.myapplication.Class.LevelPresenter;
 
 public class GameActivity extends AppCompatActivity {
-    LevelContainer levelContainer = null;
+    LevelView levelView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        levelContainer = findViewById(R.id.levelContainer);
-        initMediator();
+        levelView = findViewById(R.id.levelView);
+        LevelPresenter levelPresenter = new LevelPresenter(levelView);
 
     }
-    public void initMediator(){
-        LevelMediator levelMediator = new LevelMediator();
-        levelMediator.setLevelContainer(levelContainer);
-        levelContainer.setLevelMediator(levelMediator);
-    }
-
     @Override
     public void onWindowFocusChanged(boolean hasFocus){
-        int blockSize = levelContainer.getWidth() / 8;
-        levelContainer.setBlockSize(blockSize);
+        int blockSize = levelView.getWidth() / 8;
+        levelView.setBlockSize(blockSize);
         try {
-            levelContainer.generateLevel(R.raw.level1);
+            levelView.generateLevel(R.raw.level1);
         } catch (IOException e) {
             e.printStackTrace();
         }
