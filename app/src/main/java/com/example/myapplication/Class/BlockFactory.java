@@ -20,6 +20,9 @@ public class BlockFactory {
         else if (type == BLOCK_V){
             return new BlockV(context,nUnits, blockSize);
         }
+        else if(type == BLOCK_M){
+            return new BlockM(context,nUnits, blockSize);
+        }
         return block;
 
     }

@@ -1,4 +1,4 @@
-package com.example.myapplication.Class;
+package com.example.myapplication.Fragments;
 
 import android.os.Bundle;
 
@@ -9,12 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.myapplication.Class.LevelView;
 import com.example.myapplication.R;
 
 import java.io.IOException;
 
 public class GameFragment extends Fragment {
-    LevelContainer levelContainer = null;
+    LevelView levelView = null;
 
     public GameFragment() {
         // Required empty public constructor
@@ -30,28 +31,20 @@ public class GameFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_game, container, false);
-        /*levelContainer = view.findViewById(R.id.levelContainer);
-        initMediator();*/
+
         return view;
     }
 
-    public void initMediator(){
-        LevelMediator levelMediator = new LevelMediator();
-        levelMediator.setLevelContainer(levelContainer);
-        levelContainer.setLevelMediator(levelMediator);
-    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
-        levelContainer = view.findViewById(R.id.levelContainer);
-        initMediator();
+        levelView = view.findViewById(R.id.levelContainer);
         int blockSize = getActivity().getWindow().getDecorView().getWidth() / 8;
-        levelContainer.setBlockSize(blockSize);
+        levelView.setBlockSize(blockSize);
         try {
-            levelContainer.generateLevel(R.raw.level1);
+           levelView.updateLevel(R.raw.level1);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.d("something", "onViewCreated");
     }
 }

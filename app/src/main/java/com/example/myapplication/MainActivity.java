@@ -2,15 +2,12 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.example.myapplication.Class.GameFragment;
-import com.example.myapplication.Class.HomeFragment;
-
-import java.io.IOException;
+import com.example.myapplication.Fragments.GameFragment;
+import com.example.myapplication.Fragments.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
     @Override
