@@ -1,7 +1,6 @@
 package com.example.myapplication.Class;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
@@ -11,53 +10,40 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class LevelView extends RelativeLayout {
-    private int _currentLevel;
-    private int _minMoves;
-    private int _record;
-    private BlockFactory blockFactory;
-    private ArrayList<Point> boundaries;
-    private LevelPresenter levelPresenter;
 
+public class LevelView extends RelativeLayout {
+
+    private LevelPresenter levelPresenter;
+    BlockFactory blockFactory;
     public LevelView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        levelPresenter = new LevelPresenter(this);
         blockFactory = new BlockFactory(context);
     }
-    
 
-    public void generateLevel(int id) throws IOException {
+    public void updateLevel(int id) throws IOException {
         InputStream is = getResources().openRawResource(id);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String line = br.readLine();
-        _currentLevel = Integer.parseInt(line);
-        line = br.readLine();
-        _minMoves = Integer.parseInt(line);
-        for(;;){
-            line = br.readLine();
-            if (line == null)
-                break;
-            String[] blockInfo = line.split(" ");
-            int nUnits = blockInfo.length - 1;
-            char type = blockInfo[0].charAt(0);
-            int x = Character.getNumericValue(blockInfo[1].charAt(0));
-            int y = Character.getNumericValue(blockInfo[1].charAt(2));
-            placeBlock(type, x, y, nUnits);
-        }
+        levelPresenter.updateLevel(is);
     }
+
     public void setBlockSize(int blockSize) {
         blockFactory.setBlockSize(blockSize);
     }
 
-    public void placeBlock(char type, int x, int y, int nUnits){
-        Block block = blockFactory.createBlock(type,nUnits);
-        this.addView(block);
-        block.setTranslationX(x*blockFactory.getBlockSize());
-        block.setTranslationY(y*blockFactory.getBlockSize());
-        block.setLevelPresenter(levelPresenter);
-        levelPresenter.blocks.add(block);
+    public void placeBlocks(ArrayList<BlockInfo> blocksInfo){
+        for(BlockInfo blockInfo: blocksInfo) {
+            Block block = blockFactory.createBlock(blockInfo.getType(),blockInfo.getnUnits());
+            this.addView(block);
+            block.setTranslationX(blockInfo.getX() * blockFactory.getBlockSize());
+            block.setTranslationY(blockInfo.getY() * blockFactory.getBlockSize());
+            block.setLevelPresenter(levelPresenter);
+            levelPresenter.blocks.add(block);
+        }
     }
 
     public void setLevelPresenter(LevelPresenter levelPresenter) {
         this.levelPresenter = levelPresenter;
     }
+
+
 }

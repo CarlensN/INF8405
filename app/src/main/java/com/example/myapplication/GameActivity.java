@@ -27,7 +27,7 @@ public class GameActivity extends AppCompatActivity {
         int blockSize = levelView.getWidth() / 8;
         levelView.setBlockSize(blockSize);
         try {
-            levelView.generateLevel(R.raw.level1);
+            levelView.updateLevel(R.raw.level1);
         } catch (IOException e) {
             e.printStackTrace();
         }
