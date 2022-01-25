@@ -19,7 +19,6 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         levelView = findViewById(R.id.levelView);
-        LevelPresenter levelPresenter = new LevelPresenter(levelView);
 
     }
     @Override
