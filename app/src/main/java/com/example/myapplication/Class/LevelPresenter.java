@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class LevelPresenter {
     ArrayList<Block> blocks = new ArrayList();
     LevelView levelView;
-    Level level;
+    public Level level;
     public LevelPresenter(LevelView view){
         this.levelView = view;
         level = new Level();

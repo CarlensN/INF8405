@@ -19,10 +19,11 @@ public class Level {
     public int getCurrentLevel() {
         return currentLevel;
     }
+    public int getMinMoves(){ return minMoves; }
     public void updateLevel(InputStream is) {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String line = null;
+        String line;
         try {
             line = br.readLine();
             currentLevel = Integer.parseInt(line);

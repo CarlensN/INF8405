@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class LevelView extends RelativeLayout {
 
-    private LevelPresenter levelPresenter;
+    public LevelPresenter levelPresenter;
     BlockFactory blockFactory;
     public LevelView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -31,6 +31,7 @@ public class LevelView extends RelativeLayout {
     }
 
     public void placeBlocks(ArrayList<BlockInfo> blocksInfo){
+        this.removeAllViews();
         for(BlockInfo blockInfo: blocksInfo) {
             Block block = blockFactory.createBlock(blockInfo.getType(),blockInfo.getnUnits());
             this.addView(block);
