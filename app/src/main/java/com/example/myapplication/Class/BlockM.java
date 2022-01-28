@@ -2,6 +2,7 @@ package com.example.myapplication.Class;
 
 import android.content.Context;
 import android.view.MotionEvent;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 
 import com.example.myapplication.R;
@@ -14,25 +15,17 @@ public class BlockM extends BlockH {
 
     @Override
     public void touchMove(MotionEvent motionEvent) {
-        x += motionEvent.getX() - this.offsetX;
-        if(boundaryRight == 6 && x + (nUnits -1) *blockSize > 6 * blockSize ){
+        int x = (int) (this.x+motionEvent.getX() - this.offsetX);
+        if(boundaryRight == 6 && x + (nUnits -1) *blockSize >= 5 * blockSize ){
             win();
             return;
         }
         super.touchMove(motionEvent);
-
     }
 
     private void win() {
+        this.setClickable(false);
         this.setOnTouchListener(null);
-        this.setAnimation(new TranslateAnimation(this.getX(), this.getX()+blockSize, 0, 0;
-    }
-
-    @Override
-    protected void touchUp(MotionEvent motionEvent) {
-        if(x + (nUnits -1) *blockSize > 6 * blockSize){
-            return;
-        }
-        super.touchUp(motionEvent);
+        this.animate().x(8*blockSize).start();
     }
 }
