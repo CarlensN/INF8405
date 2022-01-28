@@ -21,16 +21,10 @@ public class BlockH extends Block {
     }
 
     @Override
-    public void setBoundaries(Pair<Integer, Integer> boundaries) {
-        this.boundaryLeft = boundaries.first;
-        this.boundaryRight = boundaries.second;
-    }
-
-    @Override
     protected void touchDown(MotionEvent motionEvent) {
         offsetX = motionEvent.getX();
         x = this.getTranslationX();
-        levelPresenter.blockHTouched(this);
+        this.findBoundaries();
     }
 
     @Override
@@ -50,20 +44,42 @@ public class BlockH extends Block {
         float adjustmentX = Math.round(x /blockSize) *blockSize;
         this.setTranslationX(adjustmentX);
         this.x = adjustmentX;
-
+        int[][] map = levelPresenter.getMap();
         int y = (int) this.getTranslationY() / blockSize;
 
-        for (int i = 1; i < levelPresenter.level.getMap().length; i++){
-            if (levelPresenter.level.getMap()[i][y] == getBlockId()){
-                levelPresenter.level.getMap()[i][y] = - 1;
+        for (int i = 1; i < map.length; i++){
+            if (map[i][y] == getBlockId()){
+                map[i][y] = - 1;
             }
         }
         int pointX = (int) (this.getTranslationX() / blockSize);
         for (int i = 0; i < nUnits; i++){
-            levelPresenter.level.getMap()[(int) pointX + i][y] = getBlockId();
+            levelPresenter.getMap()[(int) pointX + i][y] = getBlockId();
         }
     }
 
+
+    public void findBoundaries() {
+        int x = (int) this.getTranslationX()/this.blockSize;
+        int y = (int) this.getTranslationY()/this.blockSize;
+        int [][] map= levelPresenter.getMap();
+        int closestLeft = 0;
+        int closestRight = 7;
+        for(int i = 1 ; i < map.length; i++){
+            int point = map[i][y];
+            if(point != this.getBlockId() && point != -1){
+                if(i < x && i> closestLeft ){
+                    closestLeft = i;
+                }
+                else if (i > x && i < closestRight){
+                    closestRight = i;
+                }
+            }
+
+        }
+        boundaryLeft = closestLeft + 1;
+        boundaryRight = closestRight - 1;
+    }
 
 }
 

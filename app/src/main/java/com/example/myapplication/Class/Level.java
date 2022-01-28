@@ -29,7 +29,7 @@ public class Level {
             currentLevel = Integer.parseInt(line);
             line = br.readLine();
             minMoves = Integer.parseInt(line);
-            blocksInfo = new ArrayList();
+            blocksInfo = new ArrayList<>();
             map = new int[8][8];
             for (int[] ints : map) {
                 Arrays.fill(ints, -1);
@@ -67,48 +67,5 @@ public class Level {
         return map;
     }
 
-    public Pair<Integer,Integer> findBoundariesX(BlockH blockH) {
-        int x = (int) blockH.getTranslationX()/blockH.blockSize;
-        int y = (int) blockH.getTranslationY()/blockH.blockSize;
-        int closestLeft = 0;
-        int closestRight = 7;
-        for(int i = 1 ; i<map.length; i++){
-            int point = map[i][y];
-            if(point != blockH.getBlockId() && point != -1){
-                if(i < x && i> closestLeft ){
-                    closestLeft = i;
-                }
-                else if (i > x && i < closestRight){
-                    closestRight = i;
-                }
-            }
 
-        }
-        Log.i("closest left", Integer.toString(closestLeft));
-        Log.i("closest right", Integer.toString(closestRight));
-        return new Pair(closestLeft+1, closestRight-1);
-
-    }
-
-    public Pair<Integer,Integer> findBoundariesY(BlockV blockV) {
-        int x = (int) blockV.getTranslationX()/blockV.blockSize;
-        int y = (int) blockV.getTranslationY()/blockV.blockSize;
-        int closestTop = 0;
-        int closestBot = 7;
-        for(int i = 1 ; i<map.length; i++){
-            int point = map[x][i];
-            if(point != blockV.getBlockId() && point != -1){
-                if(i < y && i > closestTop ){
-                    closestTop = i;
-                }
-                else if (i > y && i < closestBot){
-                    closestBot = i;
-                }
-            }
-
-        }
-        Log.i("closest left", Integer.toString(closestTop));
-        Log.i("closest right", Integer.toString(closestBot));
-        return new Pair(closestTop+1, closestBot-1);
-    }
 }

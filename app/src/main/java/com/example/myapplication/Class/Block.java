@@ -8,6 +8,8 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.example.myapplication.R;
 
 public abstract class Block extends androidx.appcompat.widget.AppCompatImageView {
@@ -15,15 +17,13 @@ public abstract class Block extends androidx.appcompat.widget.AppCompatImageView
     int nUnits = 0;
     private int blockId;
     LevelPresenter levelPresenter;
-    @SuppressLint("ClickableViewAccessibility")
     public Block(Context context, int blockSize) {
         super(context);
         this.blockSize = blockSize;
-        this.setImageDrawable(getResources().getDrawable(R.drawable.block));
+        this.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.block, null));
+        this.setPadding(4,4,4,4);
         this.setOnTouchListener(new OnTouchBlockListener());
     }
-
-    public abstract void setBoundaries(Pair<Integer, Integer> boundaries);
 
     public class OnTouchBlockListener implements OnTouchListener {
         public static final String DEBUG_TAG = "ON_TOUCH_BLOCK" ;

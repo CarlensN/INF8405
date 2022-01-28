@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class LevelView extends RelativeLayout {
 
     private LevelPresenter levelPresenter;
-    ArrayList<Block> blocks = new ArrayList();
+    ArrayList<Block> blocks = new ArrayList<>();
     BlockFactory blockFactory;
     public LevelView(Context context, AttributeSet attrs) {
         super(context, attrs);
