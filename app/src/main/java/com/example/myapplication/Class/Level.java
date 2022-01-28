@@ -49,9 +49,6 @@ public class Level {
                         int nUnits = blockInfo.length - 1;
                         blocksInfo.add(new BlockInfo(counter,type, x, y, nUnits));
                     }
-                    if(x-1 == 0 ){
-                        int nUnits = blockInfo.length - 1;
-                    }
                     map[x][y] = counter;
                 }
 

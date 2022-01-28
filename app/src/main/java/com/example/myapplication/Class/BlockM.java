@@ -13,8 +13,9 @@ public class BlockM extends BlockH {
 
     @Override
     public void touchMove(MotionEvent motionEvent) {
-        if(boundaryRight == 7 && x + (nUnits -1) *blockSize > 6 * blockSize ){
-            setTranslationX(x + (nUnits -1) *blockSize);
+        x += motionEvent.getX() - this.offsetX;
+        if(boundaryRight == 6 && x + (nUnits -1) *blockSize > 6 * blockSize ){
+            setTranslationX(x);
             win();
             return;
         }
@@ -23,5 +24,13 @@ public class BlockM extends BlockH {
     }
 
     private void win() {
+    }
+
+    @Override
+    protected void touchUp(MotionEvent motionEvent) {
+        if(x + (nUnits -1) *blockSize > 6 * blockSize){
+            return;
+        }
+        super.touchUp(motionEvent);
     }
 }
