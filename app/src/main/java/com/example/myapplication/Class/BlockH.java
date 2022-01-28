@@ -2,12 +2,17 @@ package com.example.myapplication.Class;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 public class BlockH extends Block {
-    float offsetX = 0; //block position
+    //block position
     float x = 0;
+    float offsetX = 0;
+    int boundaryLeft;
+    int boundaryRight;
 
     public BlockH(Context context, int nUnits, int blockSize) {
         super(context, blockSize);
@@ -16,18 +21,25 @@ public class BlockH extends Block {
     }
 
     @Override
+    public void setBoundaries(Pair<Integer, Integer> boundaries) {
+        this.boundaryLeft = boundaries.first;
+        this.boundaryRight = boundaries.second;
+    }
+
+    @Override
     protected void touchDown(MotionEvent motionEvent) {
-        this.offsetX = motionEvent.getX();
-        this.x = this.getTranslationX();
+        offsetX = motionEvent.getX();
+        x = this.getTranslationX();
+        levelPresenter.blockHTouched(this);
     }
 
     @Override
     public void touchMove(MotionEvent motionEvent) {
         x += motionEvent.getX() - this.offsetX;
-        if(x < blockSize){
-            x = blockSize;
-        }else if(x + (nUnits -1) *blockSize > 6 * blockSize){
-            x = 6 * blockSize - (nUnits - 1) * blockSize;
+        if(x < boundaryLeft * blockSize){
+            x = boundaryLeft * blockSize;
+        }else if(x + (nUnits -1) *blockSize > boundaryRight* blockSize){
+            x = boundaryRight * blockSize - (nUnits - 1) * blockSize;
         }
         this.setTranslationX(x);
 
@@ -38,5 +50,7 @@ public class BlockH extends Block {
         float adjustmentX = Math.round(x /blockSize) *blockSize;
         this.setTranslationX(adjustmentX);
     }
+
+
 }
 

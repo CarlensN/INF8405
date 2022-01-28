@@ -13,13 +13,13 @@ public class BlockM extends BlockH {
 
     @Override
     public void touchMove(MotionEvent motionEvent) {
-        x += motionEvent.getX() - this.offsetX;
-        if(x < blockSize) {
-            x = blockSize;
-        }else if(x + (nUnits -1) *blockSize > 6 * blockSize){
+        if(boundaryRight == 7 && x + (nUnits -1) *blockSize > 6 * blockSize ){
+            setTranslationX(x + (nUnits -1) *blockSize);
             win();
+            return;
         }
-        this.setTranslationX(x);
+        super.touchMove(motionEvent);
+
     }
 
     private void win() {

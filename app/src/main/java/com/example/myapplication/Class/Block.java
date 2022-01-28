@@ -4,6 +4,7 @@ package com.example.myapplication.Class;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -12,6 +13,7 @@ import com.example.myapplication.R;
 public abstract class Block extends androidx.appcompat.widget.AppCompatImageView {
     int blockSize;
     int nUnits = 0;
+    private int blockId;
     LevelPresenter levelPresenter;
     @SuppressLint("ClickableViewAccessibility")
     public Block(Context context, int blockSize) {
@@ -20,6 +22,9 @@ public abstract class Block extends androidx.appcompat.widget.AppCompatImageView
         this.setImageDrawable(getResources().getDrawable(R.drawable.block));
         this.setOnTouchListener(new OnTouchBlockListener());
     }
+
+    public abstract void setBoundaries(Pair<Integer, Integer> boundaries);
+
     public class OnTouchBlockListener implements OnTouchListener {
         public static final String DEBUG_TAG = "ON_TOUCH_BLOCK" ;
         @Override
@@ -47,9 +52,14 @@ public abstract class Block extends androidx.appcompat.widget.AppCompatImageView
             }
         }
     }
-
+    void setBlockId(int id){
+        this.blockId = id;
+    }
     public void setLevelPresenter(LevelPresenter levelPresenter) {
         this.levelPresenter = levelPresenter;
+    }
+    int getBlockId(){
+        return this.blockId;
     }
 
     protected abstract void touchDown(MotionEvent motionEvent);
