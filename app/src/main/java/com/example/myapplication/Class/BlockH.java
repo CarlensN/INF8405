@@ -49,6 +49,18 @@ public class BlockH extends Block {
     protected void touchUp(MotionEvent motionEvent) {
         float adjustmentX = Math.round(x /blockSize) *blockSize;
         this.setTranslationX(adjustmentX);
+
+        int y = (int) this.getTranslationY() / blockSize;
+
+        for (int i = 1; i < levelPresenter.level.getMap().length; i++){
+            if (levelPresenter.level.getMap()[i][y] == getBlockId()){
+                levelPresenter.level.getMap()[i][y] = - 1;
+            }
+        }
+        this.x = this.getTranslationX() / blockSize;
+        for (int i = 0; i < nUnits; i++){
+            levelPresenter.level.getMap()[(int) x + i][y] = getBlockId();
+        }
     }
 
 
