@@ -18,6 +18,8 @@
             android:layout_height="100dp"
             android:layout_marginStart="20dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintEnd_toStartOf="@+id/move_score_layout"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -44,23 +46,27 @@
                 android:id="@+id/previous_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:onClick="previous"
                 android:text="Prev."
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/next_button"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/puzzle_number" />
 
             <Button
                 android:id="@+id/next_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:onClick="next"
                 android:text="Next"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/previous_button" />
+                app:layout_constraintStart_toEndOf="@+id/previous_button"
+                app:layout_constraintTop_toBottomOf="@+id/puzzle_number" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -68,8 +74,10 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginEnd="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/levelContainer"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/puzzle_level"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
@@ -138,8 +146,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/puzzle_level"
-            tools:ignore="MissingConstraints" >
+            app:layout_constraintTop_toTopOf="@+id/guideline3"
+            tools:ignore="MissingConstraints">
             app:layout_constraintTop_toTopOf="@+id/guideline3"
             tools:ignore="MissingConstraints" />
 

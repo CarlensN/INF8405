@@ -1,7 +1,12 @@
 package com.example.myapplication.Class;
 
+import android.app.Application;
+import android.content.res.Resources;
 import android.util.Log;
 import android.util.Pair;
+
+import com.example.myapplication.MainActivity;
+import com.example.myapplication.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,12 +22,13 @@ public class Level {
     private int record;
     private int[][] map;
     private ArrayList<BlockInfo> blocksInfo;
+    private Resources resources = Resources.getSystem();
     public int getCurrentLevel() {
         return currentLevel;
     }
     public int getMinMoves(){ return minMoves; }
-    public void updateLevel(InputStream is) {
-
+    public void updateLevel(int id, InputStream is) {
+        currentLevel = id;
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         String line;
         try {
@@ -59,7 +65,6 @@ public class Level {
             e.printStackTrace();
         }
     }
-
     public ArrayList<BlockInfo> getBlocksInfo() {
         return blocksInfo;
     }

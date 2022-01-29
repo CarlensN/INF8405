@@ -18,13 +18,7 @@ public class LevelView extends RelativeLayout {
     BlockFactory blockFactory;
     public LevelView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        levelPresenter = new LevelPresenter(this);
         blockFactory = new BlockFactory(context);
-    }
-
-    public void updateLevel(int id) throws IOException {
-        InputStream is = getResources().openRawResource(id);
-        levelPresenter.updateLevel(is);
     }
 
     public void setBlockSize(int blockSize) {

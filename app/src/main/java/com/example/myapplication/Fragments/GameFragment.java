@@ -11,14 +11,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.myapplication.Class.LevelPresenter;
 import com.example.myapplication.Class.LevelView;
 import com.example.myapplication.R;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class GameFragment extends Fragment {
-    int currentLevel;
-    int minMoves;
+    LevelPresenter levelPresenter = null;
     LevelView levelView = null;
     TextView puzzleNumber = null;
     TextView recordCounter = null;
@@ -29,12 +30,10 @@ public class GameFragment extends Fragment {
     public GameFragment() {
         // Required empty public constructor
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,94 +48,47 @@ public class GameFragment extends Fragment {
         return view;
     }
 
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
         levelView = view.findViewById(R.id.levelContainer);
+        levelPresenter = new LevelPresenter(this, levelView);
+        levelView.setLevelPresenter(levelPresenter);
         int blockSize = getActivity().getWindow().getDecorView().getWidth() / 8;
         levelView.setBlockSize(blockSize);
-        try {
-           levelView.updateLevel(R.raw.level1);
-           currentLevel = levelView.levelPresenter.level.getCurrentLevel();
-           minMoves = levelView.levelPresenter.level.getMinMoves();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        updateView();
-        setPreviousNextVisibility();
+        levelPresenter.updateLevel(1);
         setListeners();
     }
 
     private void setListeners() {
-        nextButton.setOnClickListener(view -> {
-            try {
-                next();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        nextButton.setOnClickListener(view ->
+                levelPresenter.onNextLevel()
+        );
 
-        prevButton.setOnClickListener(view -> {
-            try {
-                prev();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        prevButton.setOnClickListener(view ->
+            levelPresenter.onPrevLevel()
+        );
     }
 
-    private void updateView() {
-        puzzleNumber.setText(String.valueOf(levelView.levelPresenter.level.getCurrentLevel()));
-        minimumMoves.setText(String.valueOf(levelView.levelPresenter.level.getMinMoves()));
+    public void updateTopBarDisplay(int levelNumber, int minMoves) {
+        puzzleNumber.setText(String.valueOf(levelNumber));
+        minimumMoves.setText(String.valueOf(minMoves));
     }
 
-
-    public void next() throws IOException {
-        switch(currentLevel){
-            case 1:
-                levelView.updateLevel(R.raw.level2);
-                break;
-
-            case 2:
-                levelView.updateLevel(R.raw.level3);
-                break;
+    public void setPreviousVisibility(boolean isVisible){
+        if(isVisible){
+            prevButton.setVisibility(View.VISIBLE);
         }
-        currentLevel = levelView.levelPresenter.level.getCurrentLevel();
-        updateView();
-        setPreviousNextVisibility();
-    }
-
-    public void prev() throws IOException {
-        switch(currentLevel){
-            case 2:
-                levelView.updateLevel(R.raw.level1);
-                break;
-
-            case 3:
-                levelView.updateLevel(R.raw.level2);
-                break;
+        else{
+            prevButton.setVisibility(View.GONE);
         }
-        currentLevel = levelView.levelPresenter.level.getCurrentLevel();
-        updateView();
-        setPreviousNextVisibility();
     }
 
-    public void setPreviousNextVisibility(){
-        switch (currentLevel){
-            case 1 :
-                prevButton.setVisibility(View.GONE);
-                nextButton.setVisibility(View.VISIBLE);
-                break;
-            case 2:
-                prevButton.setVisibility(View.VISIBLE);
-                nextButton.setVisibility(View.VISIBLE);
-                break;
-
-            case 3:
-                prevButton.setVisibility(View.VISIBLE);
-                nextButton.setVisibility(View.GONE);
-                break;
+    public void setNextVisibility(boolean isVisible){
+        if(isVisible){
+            nextButton.setVisibility(View.VISIBLE);
+        }
+        else{
+            nextButton.setVisibility(View.GONE);
         }
     }
 }
