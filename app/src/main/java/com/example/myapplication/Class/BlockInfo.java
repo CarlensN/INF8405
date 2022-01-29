@@ -5,7 +5,9 @@ public class BlockInfo {
     private int x;
     private int y;
     private int nUnits;
-    public BlockInfo(char type, int x, int y, int nUnits){
+    private int id;
+    public BlockInfo(int id, char type, int x, int y, int nUnits){
+        this.id = id;
         this.type = type;
         this.x = x;
         this.y = y;
@@ -26,5 +28,9 @@ public class BlockInfo {
 
     public int getnUnits() {
         return nUnits;
+    }
+
+    public int getId() {
+        return id;
     }
 }
