@@ -14,15 +14,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Stack;
 
 public class Level {
-
+    private Stack<Pair<Point, Integer>> moves;
     private int currentLevel;
     private int minMoves;
     private int record;
     private int[][] map;
     private ArrayList<BlockInfo> blocksInfo;
     private Resources resources = Resources.getSystem();
+
+    public Level(){
+        moves = new Stack<>();
+    }
     public int getCurrentLevel() {
         return currentLevel;
     }
@@ -71,6 +76,10 @@ public class Level {
 
     public int[][] getMap() {
         return map;
+    }
+
+    public Stack<Pair<Point, Integer>> getMoves(){
+        return moves;
     }
 
 

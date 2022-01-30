@@ -5,6 +5,7 @@ import com.example.myapplication.R;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class LevelPresenter {
     private final int MAX_LEVEL = 3;
@@ -15,6 +16,7 @@ public class LevelPresenter {
         this.gameFragment = gameFragment;
         this.levelView = levelView;
         level = new Level();
+        moves = new Stack<>();
     }
     public void updateLevel(int id){
         int levelResId = gameFragment.getResources().getIdentifier(
@@ -49,5 +51,9 @@ public class LevelPresenter {
     }
     public int[][] getMap(){
         return level.getMap();
+    }
+
+    public void addToMoves(Pair move){
+        level.getMoves().push(move);
     }
 }

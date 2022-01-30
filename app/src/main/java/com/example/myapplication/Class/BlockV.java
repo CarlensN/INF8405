@@ -1,6 +1,7 @@
 package com.example.myapplication.Class;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -56,6 +57,8 @@ public class BlockV extends Block{
         for (int i = 0; i < nUnits; i++){
             levelPresenter.getMap()[x][pointY + i] = getBlockId();
         }
+        Pair pair = new Pair(new Point(x, (int) y), this.getBlockId());
+        levelPresenter.addToMoves(pair);
     }
 
     public void findBoundaries() {
