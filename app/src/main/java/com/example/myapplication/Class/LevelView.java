@@ -56,7 +56,7 @@ public class LevelView extends RelativeLayout {
         for(Block block:blocks){
             this.removeView(block);
         }
-        this.blocks = new ArrayList<>();
+        this.blocks.clear();
     }
 
     public void setLevelPresenter(LevelPresenter levelPresenter) {
