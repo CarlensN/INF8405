@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +13,6 @@ import android.widget.TextView;
 import com.example.myapplication.Class.LevelPresenter;
 import com.example.myapplication.Class.LevelView;
 import com.example.myapplication.R;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 public class GameFragment extends Fragment {
     LevelPresenter levelPresenter = null;
@@ -55,6 +51,7 @@ public class GameFragment extends Fragment {
         levelView.setLevelPresenter(levelPresenter);
         int blockSize = getActivity().getWindow().getDecorView().getWidth() / 8;
         levelView.setBlockSize(blockSize);
+        levelView.displayMap(getContext());
         levelPresenter.updateLevel(1);
         setListeners();
     }

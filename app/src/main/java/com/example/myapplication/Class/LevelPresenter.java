@@ -23,6 +23,7 @@ public class LevelPresenter {
                 "com.example.myapplication");
         level.updateLevel(id, gameFragment.getResources().openRawResource(levelResId));
         ArrayList<BlockInfo> blocksInfo = level.getBlocksInfo();
+        levelView.clearBlocks();
         levelView.placeBlocks(blocksInfo);
         gameFragment.updateTopBarDisplay(level.getCurrentLevel(),level.getMinMoves());
         if (level.getCurrentLevel() >= MAX_LEVEL){
