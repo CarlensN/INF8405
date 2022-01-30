@@ -158,17 +158,17 @@
             tools:ignore="UsingOnClickInXml" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/undoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:layout_marginEnd="20dp"
-            android:text="Redo"
+            android:text="Undo"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button4" />
+            app:layout_constraintEnd_toStartOf="@+id/resetButton" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/resetButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"

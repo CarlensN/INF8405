@@ -25,6 +25,9 @@ public class GameFragment extends Fragment {
     TextView minimumMoves = null;
     Button nextButton = null;
     Button prevButton = null;
+    Button pauseButton = null;
+    Button undoButton = null;
+    Button resetButton = null;
 
     public GameFragment() {
         // Required empty public constructor
@@ -45,6 +48,9 @@ public class GameFragment extends Fragment {
         minimumMoves = view.findViewById(R.id.minimumMoves);
         nextButton = view.findViewById(R.id.next_button);
         prevButton = view.findViewById(R.id.previous_button);
+        pauseButton = view.findViewById(R.id.pause_button);
+        undoButton = view.findViewById(R.id.undoButton);
+        resetButton = view.findViewById(R.id.resetButton);
 
         return view;
     }
@@ -80,6 +86,18 @@ public class GameFragment extends Fragment {
         prevButton.setOnClickListener(view -> {
             try {
                 prev();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        pauseButton.setOnClickListener(view -> pause());
+
+        undoButton.setOnClickListener(view -> undo());
+
+        resetButton.setOnClickListener(view -> {
+            try {
+                reset();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -136,6 +154,29 @@ public class GameFragment extends Fragment {
             case 3:
                 prevButton.setVisibility(View.VISIBLE);
                 nextButton.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    public void pause(){
+        getActivity().getSupportFragmentManager().popBackStack();
+    }
+
+    public void undo(){
+
+    }
+
+    public void reset() throws IOException {
+        switch (currentLevel){
+            case 1:
+                levelView.updateLevel(R.raw.level1);
+                break;
+            case 2:
+                levelView.updateLevel(R.raw.level2);
+                break;
+
+            case 3:
+                levelView.updateLevel(R.raw.level3);
                 break;
         }
     }
