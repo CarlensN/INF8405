@@ -15,7 +15,7 @@ import com.example.myapplication.R;
 public abstract class Block extends androidx.appcompat.widget.AppCompatImageView {
     int blockSize;
     int nUnits = 0;
-    private int blockId;
+    protected int blockId;
     LevelPresenter levelPresenter;
     public Block(Context context, int blockSize) {
         super(context);
@@ -62,10 +62,14 @@ public abstract class Block extends androidx.appcompat.widget.AppCompatImageView
         return this.blockId;
     }
 
+    void addToMoves(int blockId, int pos){
+        this.levelPresenter.addToMoves(blockId, pos);
+    }
+
     protected abstract void touchDown(MotionEvent motionEvent);
     protected abstract void touchMove(MotionEvent motionEvent);
     protected abstract void touchUp(MotionEvent motionEvent);
-
+    protected abstract void undoMove(int pos);
 }
 
 

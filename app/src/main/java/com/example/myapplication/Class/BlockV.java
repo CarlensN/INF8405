@@ -1,9 +1,7 @@
 package com.example.myapplication.Class;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.util.Log;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
@@ -13,6 +11,8 @@ public class BlockV extends Block{
     float offsetY = 0;
     int boundaryTop;
     int boundaryBot;
+    int oldPos = 0;
+    int newPos =0;
 
     public BlockV(Context context,int nUnits, int blockSize) {
         super(context,blockSize);
@@ -24,6 +24,7 @@ public class BlockV extends Block{
     protected void touchDown(MotionEvent motionEvent) {
         this.offsetY = motionEvent.getY();
         this.y = this.getTranslationY();
+        oldPos = (int)y;
         this.findBoundaries();
 
     }
@@ -45,6 +46,20 @@ public class BlockV extends Block{
         float adjustmentY = Math.round(y /blockSize) *blockSize;
         this.setTranslationY(adjustmentY);
         this.y = adjustmentY;
+        updateMap();
+        newPos = (int)y;
+        if(oldPos != newPos) {
+            levelPresenter.addToMoves(blockId, oldPos/blockSize);
+        }
+    }
+
+    @Override
+    protected void undoMove(int pos) {
+        this.setTranslationY((pos) * blockSize);
+        updateMap();
+    }
+
+    void updateMap(){
         int[][] map = levelPresenter.getMap();
         int x = (int) this.getTranslationX() / blockSize;
 
@@ -56,11 +71,13 @@ public class BlockV extends Block{
         int pointY = (int) (this.getTranslationY() / blockSize);
         for (int i = 0; i < nUnits; i++){
             levelPresenter.getMap()[x][pointY + i] = getBlockId();
-        }
-        Pair pair = new Pair(new Point(x, (int) y), this.getBlockId());
-        levelPresenter.addToMoves(pair);
-    }
+            if(getBlockId() == 1 && levelPresenter.getMap()[4][1] == getBlockId()){
+                int five = 5;
+                Log.d("","");
 
+            }
+        }
+    }
     public void findBoundaries() {
         int x = (int) this.getTranslationX()/this.blockSize;
         int y = (int) this.getTranslationY()/this.blockSize;

@@ -11,6 +11,8 @@ import android.widget.RelativeLayout;
 public class BlockH extends Block {
     //block position
     float x = 0;
+    int oldPos = 0;
+    int newPos = 0;
     float offsetX = 0;
     int boundaryLeft;
     int boundaryRight;
@@ -25,6 +27,7 @@ public class BlockH extends Block {
     protected void touchDown(MotionEvent motionEvent) {
         offsetX = motionEvent.getX();
         x = this.getTranslationX();
+        oldPos = (int)x;
         this.findBoundaries();
     }
 
@@ -45,9 +48,22 @@ public class BlockH extends Block {
         float adjustmentX = Math.round(x /blockSize) *blockSize;
         this.setTranslationX(adjustmentX);
         this.x = adjustmentX;
+        updateMap();
+        newPos = (int)x;
+        if(oldPos!= newPos) {
+            this.addToMoves(blockId, oldPos/blockSize);
+        }
+    }
+
+    @Override
+    protected void undoMove(int pos) {
+        this.setTranslationX((pos) * blockSize);
+        this.updateMap();
+    }
+
+    void updateMap(){
         int[][] map = levelPresenter.getMap();
         int y = (int) this.getTranslationY() / blockSize;
-
         for (int i = 1; i < map.length; i++){
             if (map[i][y] == getBlockId()){
                 map[i][y] = - 1;
@@ -57,8 +73,6 @@ public class BlockH extends Block {
         for (int i = 0; i < nUnits; i++){
             levelPresenter.getMap()[(int) pointX + i][y] = getBlockId();
         }
-        Pair pair = new Pair(new Point((int) x, y), this.getBlockId());
-        levelPresenter.addToMoves(pair);
     }
 
 

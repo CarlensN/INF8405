@@ -1,24 +1,22 @@
 package com.example.myapplication.Class;
-import com.example.myapplication.Fragments.GameFragment;
-import com.example.myapplication.R;
+import android.util.Pair;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import com.example.myapplication.Fragments.GameFragment;
+
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class LevelPresenter {
     private final int MAX_LEVEL = 3;
-    private LevelView levelView;
-    private Level level;
-    private GameFragment gameFragment;
+    private final LevelView levelView;
+    private final Level level;
+    private final GameFragment gameFragment;
     public LevelPresenter(GameFragment gameFragment, LevelView levelView){
         this.gameFragment = gameFragment;
         this.levelView = levelView;
         level = new Level();
-        moves = new Stack<>();
     }
     public void updateLevel(int id){
+        clearMovesStack();
         int levelResId = gameFragment.getResources().getIdentifier(
                 "level" + id,
                 "raw",
@@ -53,7 +51,25 @@ public class LevelPresenter {
         return level.getMap();
     }
 
-    public void addToMoves(Pair move){
-        level.getMoves().push(move);
+    public void addToMoves(int id, int pos) {
+        level.addToMoves(id,pos);
+        this.gameFragment.setUndoVisibility(true);
+    }
+
+    public void onReset() {
+        this.updateLevel(level.getCurrentLevel());
+    }
+
+    public void onUndo() {
+        Pair<Integer,Integer> moveToUndo = this.level.getMovesStack().pop();
+        this.levelView.undoMove(moveToUndo);
+        if(this.level.getMovesStack().empty()){
+            this.gameFragment.setUndoVisibility(false);
+        }
+    }
+
+    public void clearMovesStack(){
+        this.gameFragment.setUndoVisibility(false);
+        this.level.getMovesStack().clear();
     }
 }

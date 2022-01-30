@@ -3,6 +3,7 @@ package com.example.myapplication.Class;
 import android.content.Context;
 import android.media.Image;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -55,6 +56,7 @@ public class LevelView extends RelativeLayout {
         for(Block block:blocks){
             this.removeView(block);
         }
+        this.blocks = new ArrayList<>();
     }
 
     public void setLevelPresenter(LevelPresenter levelPresenter) {
@@ -62,4 +64,13 @@ public class LevelView extends RelativeLayout {
     }
 
 
+    public void undoMove(Pair<Integer, Integer> moveToUndo) {
+        int blockId = moveToUndo.first;
+        int pos = moveToUndo.second;
+        for(Block block : blocks){
+            if(block.getBlockId() == blockId){
+                block.undoMove(pos);
+            }
+        }
+    }
 }

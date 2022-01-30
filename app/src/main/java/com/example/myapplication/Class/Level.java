@@ -1,12 +1,7 @@
 package com.example.myapplication.Class;
 
-import android.app.Application;
 import android.content.res.Resources;
-import android.util.Log;
 import android.util.Pair;
-
-import com.example.myapplication.MainActivity;
-import com.example.myapplication.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,16 +12,16 @@ import java.util.Arrays;
 import java.util.Stack;
 
 public class Level {
-    private Stack<Pair<Point, Integer>> moves;
+    private Stack<Pair<Integer, Integer>> movesStack;
     private int currentLevel;
     private int minMoves;
     private int record;
     private int[][] map;
     private ArrayList<BlockInfo> blocksInfo;
-    private Resources resources = Resources.getSystem();
+    private final Resources resources = Resources.getSystem();
 
     public Level(){
-        moves = new Stack<>();
+        movesStack = new Stack<>();
     }
     public int getCurrentLevel() {
         return currentLevel;
@@ -74,13 +69,15 @@ public class Level {
         return blocksInfo;
     }
 
+    public void addToMoves(int id, int pos){
+        this.movesStack.push(new Pair<>(id,pos));
+    }
+
+    public Stack<Pair<Integer, Integer>> getMovesStack() {
+        return movesStack;
+    }
+
     public int[][] getMap() {
         return map;
     }
-
-    public Stack<Pair<Point, Integer>> getMoves(){
-        return moves;
-    }
-
-
 }

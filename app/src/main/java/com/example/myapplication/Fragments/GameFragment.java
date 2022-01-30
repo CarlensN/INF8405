@@ -14,6 +14,8 @@ import com.example.myapplication.Class.LevelPresenter;
 import com.example.myapplication.Class.LevelView;
 import com.example.myapplication.R;
 
+import java.io.IOException;
+
 public class GameFragment extends Fragment {
     LevelPresenter levelPresenter = null;
     LevelView levelView = null;
@@ -70,6 +72,10 @@ public class GameFragment extends Fragment {
         prevButton.setOnClickListener(view ->
             levelPresenter.onPrevLevel()
         );
+        resetButton.setOnClickListener(view ->
+                this.levelPresenter.onReset());
+        undoButton.setOnClickListener(view ->
+                this.levelPresenter.onUndo());
     }
 
     public void updateTopBarDisplay(int levelNumber, int minMoves) {
@@ -95,26 +101,17 @@ public class GameFragment extends Fragment {
         }
     }
 
+    public void setUndoVisibility(boolean isVisible){
+        if(isVisible){
+            undoButton.setVisibility(View.VISIBLE);
+        }
+        else{
+            undoButton.setVisibility(View.GONE);
+        }
+    }
+
     public void pause(){
         getActivity().getSupportFragmentManager().popBackStack();
     }
 
-    public void undo(){
-
-    }
-
-    public void reset() throws IOException {
-        switch (currentLevel){
-            case 1:
-                levelView.updateLevel(R.raw.level1);
-                break;
-            case 2:
-                levelView.updateLevel(R.raw.level2);
-                break;
-
-            case 3:
-                levelView.updateLevel(R.raw.level3);
-                break;
-        }
-    }
 }
