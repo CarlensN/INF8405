@@ -6,6 +6,8 @@ import com.example.myapplication.Fragments.GameFragment;
 import java.util.ArrayList;
 
 public class LevelPresenter {
+    private int moveCount = 0;
+    private MovesListener moves;
     private final int MAX_LEVEL = 3;
     private final LevelView levelView;
     private final Level level;
@@ -14,6 +16,7 @@ public class LevelPresenter {
         this.gameFragment = gameFragment;
         this.levelView = levelView;
         level = new Level();
+        moves = new MovesListener();
     }
     public void updateLevel(int id){
         clearMovesStack();
@@ -35,6 +38,8 @@ public class LevelPresenter {
     }
 
     public void onNextLevel(){
+        moveCount = 0;
+        moves.set(moveCount);
         gameFragment.setPreviousVisibility(true);
         if(level.getCurrentLevel() < MAX_LEVEL){
             updateLevel(level.getCurrentLevel()+1);
@@ -42,6 +47,8 @@ public class LevelPresenter {
     }
 
     public void onPrevLevel(){
+        moveCount = 0;
+        moves.set(moveCount);
         gameFragment.setNextVisibility(true);
         if(level.getCurrentLevel() > 1){
             updateLevel(level.getCurrentLevel()-1);
@@ -52,15 +59,19 @@ public class LevelPresenter {
     }
 
     public void addToMoves(int id, int pos) {
+        moves.set(++moveCount);
         level.addToMoves(id,pos);
         this.gameFragment.setUndoVisibility(true);
     }
 
     public void onReset() {
+        moveCount = 0;
+        moves.set(moveCount);
         this.updateLevel(level.getCurrentLevel());
     }
 
     public void onUndo() {
+        moves.set(--moveCount);
         Pair<Integer,Integer> moveToUndo = this.level.getMovesStack().pop();
         this.levelView.undoMove(moveToUndo);
         if(this.level.getMovesStack().empty()){
@@ -71,5 +82,13 @@ public class LevelPresenter {
     public void clearMovesStack(){
         this.gameFragment.setUndoVisibility(false);
         this.level.getMovesStack().clear();
+    }
+
+    public MovesListener getMovesListener(){
+        return moves;
+    }
+
+    public void setMovesListener(int value){
+        moves.set(value);
     }
 }

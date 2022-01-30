@@ -83,13 +83,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Moves"
-                app:layout_constraintBottom_toTopOf="@+id/moves_number"
+                app:layout_constraintBottom_toTopOf="@+id/moves_counter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/moves_number"
+                android:id="@+id/moves_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.myapplication.Class.LevelPresenter;
 import com.example.myapplication.Class.LevelView;
+import com.example.myapplication.Class.MovesListener;
 import com.example.myapplication.R;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class GameFragment extends Fragment {
     TextView puzzleNumber = null;
     TextView recordCounter = null;
     TextView minimumMoves = null;
+    TextView movesCounter = null;
     Button nextButton = null;
     Button prevButton = null;
     Button pauseButton = null;
@@ -43,6 +45,7 @@ public class GameFragment extends Fragment {
         puzzleNumber = view.findViewById(R.id.puzzle_number);
         recordCounter = view.findViewById(R.id.record_counter);
         minimumMoves = view.findViewById(R.id.minimumMoves);
+        movesCounter = view.findViewById(R.id.moves_counter);
         nextButton = view.findViewById(R.id.next_button);
         prevButton = view.findViewById(R.id.previous_button);
         pauseButton = view.findViewById(R.id.pause_button);
@@ -61,6 +64,7 @@ public class GameFragment extends Fragment {
         levelView.setBlockSize(blockSize);
         levelView.displayMap(getContext());
         levelPresenter.updateLevel(1);
+        movesCounter.setText(String.valueOf(levelPresenter.getMovesListener().get()));
         setListeners();
     }
 
@@ -76,6 +80,8 @@ public class GameFragment extends Fragment {
                 this.levelPresenter.onReset());
         undoButton.setOnClickListener(view ->
                 this.levelPresenter.onUndo());
+
+        levelPresenter.getMovesListener().setOnIntegerChangeListener(value -> movesCounter.setText(String.valueOf(value)));
     }
 
     public void updateTopBarDisplay(int levelNumber, int minMoves) {
