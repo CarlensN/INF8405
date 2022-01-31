@@ -110,10 +110,12 @@
                 android:id="@+id/record_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
                 android:layout_marginEnd="10dp"
                 android:text="--"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/separator" />
+                app:layout_constraintEnd_toStartOf="@+id/separator"
+                app:layout_constraintStart_toEndOf="@+id/record_title" />
 
             <TextView
                 android:id="@+id/minimumMoves"

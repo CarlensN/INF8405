@@ -1,6 +1,8 @@
 package com.example.myapplication.Class;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.MotionEvent;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -27,6 +29,15 @@ public class BlockM extends BlockH {
         this.setClickable(false);
         this.setOnTouchListener(null);
         this.animate().x(8*blockSize).start();
+        saveRecord();
+    }
+
+    private void saveRecord() {
+        levelPresenter.setCurrentRecord(levelPresenter.getMovesListener().get());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(String.valueOf(levelPresenter.getCurrentLevel()), levelPresenter.getCurrentRecord());
+        editor.apply();
     }
 
 

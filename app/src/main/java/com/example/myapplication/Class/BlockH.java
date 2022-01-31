@@ -1,11 +1,7 @@
 package com.example.myapplication.Class;
 
 import android.content.Context;
-import android.graphics.Point;
-import android.util.Log;
-import android.util.Pair;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 public class BlockH extends Block {

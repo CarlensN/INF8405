@@ -1,20 +1,12 @@
 package com.example.myapplication.Class;
 
 import android.content.Context;
-import android.media.Image;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
 import androidx.core.content.res.ResourcesCompat;
-
 import com.example.myapplication.R;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 

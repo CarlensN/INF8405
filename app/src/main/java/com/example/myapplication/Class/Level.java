@@ -1,6 +1,5 @@
 package com.example.myapplication.Class;
 
-import android.content.res.Resources;
 import android.util.Pair;
 
 import java.io.BufferedReader;
@@ -15,10 +14,8 @@ public class Level {
     private Stack<Pair<Integer, Integer>> movesStack;
     private int currentLevel;
     private int minMoves;
-    private int record;
     private int[][] map;
     private ArrayList<BlockInfo> blocksInfo;
-    private final Resources resources = Resources.getSystem();
 
     public Level(){
         movesStack = new Stack<>();

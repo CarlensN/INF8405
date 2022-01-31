@@ -2,7 +2,7 @@ package com.example.myapplication.Class;
 
 public class MovesListener {
     public interface OnIntegerChangeListener{
-        public void OnIntegerChanged(int value);
+        void OnIntegerChanged(int value);
     }
 
     private OnIntegerChangeListener listener;

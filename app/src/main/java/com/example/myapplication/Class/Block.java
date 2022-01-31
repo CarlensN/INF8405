@@ -1,10 +1,8 @@
 package com.example.myapplication.Class;
 
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 

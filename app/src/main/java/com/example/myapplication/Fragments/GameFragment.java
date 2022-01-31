@@ -1,9 +1,11 @@
 package com.example.myapplication.Fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +14,7 @@ import android.widget.TextView;
 
 import com.example.myapplication.Class.LevelPresenter;
 import com.example.myapplication.Class.LevelView;
-import com.example.myapplication.Class.MovesListener;
 import com.example.myapplication.R;
-
-import java.io.IOException;
 
 public class GameFragment extends Fragment {
     LevelPresenter levelPresenter = null;
@@ -69,6 +68,10 @@ public class GameFragment extends Fragment {
     }
 
     private void setListeners() {
+        pauseButton.setOnClickListener(view ->
+                pause()
+        );
+
         nextButton.setOnClickListener(view ->
                 levelPresenter.onNextLevel()
         );
@@ -87,6 +90,19 @@ public class GameFragment extends Fragment {
     public void updateTopBarDisplay(int levelNumber, int minMoves) {
         puzzleNumber.setText(String.valueOf(levelNumber));
         minimumMoves.setText(String.valueOf(minMoves));
+        displayRecord(levelNumber);
+    }
+
+    private void displayRecord(int levelNumber) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+
+        int newRecord = preferences.getInt(String.valueOf(levelNumber), 0);
+        if (newRecord != 0){
+            recordCounter.setText(String.valueOf(newRecord));
+        }
+        else{
+            recordCounter.setText("--");
+        }
     }
 
     public void setPreviousVisibility(boolean isVisible){

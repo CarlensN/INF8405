@@ -6,8 +6,9 @@ import com.example.myapplication.Fragments.GameFragment;
 import java.util.ArrayList;
 
 public class LevelPresenter {
+    private int currentRecord = 0;
     private int moveCount = 0;
-    private MovesListener moves;
+    private final MovesListener moves;
     private final int MAX_LEVEL = 3;
     private final LevelView levelView;
     private final Level level;
@@ -88,7 +89,20 @@ public class LevelPresenter {
         return moves;
     }
 
-    public void setMovesListener(int value){
-        moves.set(value);
+    public int getCurrentRecord(){
+        return currentRecord;
     }
+
+    public void setCurrentRecord(int value){
+        currentRecord = value;
+    }
+
+    public void saveCurrentRecord(int level, int currentRecord){
+
+    }
+
+    public int getCurrentLevel(){
+        return level.getCurrentLevel();
+    }
+
 }
