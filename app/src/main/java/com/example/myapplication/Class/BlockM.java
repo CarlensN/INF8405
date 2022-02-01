@@ -30,23 +30,9 @@ public class BlockM extends BlockH {
         this.setClickable(false);
         this.setOnTouchListener(null);
         this.animate().x(8*blockSize).start();
-        saveRecord();
+        levelPresenter.onWin();
         showWinDialog();
         levelPresenter.removeListeners();
-    }
-
-    private void saveRecord() {
-        int moves = levelPresenter.getMovesListener().get();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        int currentRecord = preferences.getInt(String.valueOf(levelPresenter.getCurrentLevel()), 0);
-
-        if (moves < currentRecord){
-            levelPresenter.setCurrentRecord(moves);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putInt(String.valueOf(levelPresenter.getCurrentLevel()), levelPresenter.getCurrentRecord());
-            editor.apply();
-        }
-
     }
 
     private void showWinDialog(){

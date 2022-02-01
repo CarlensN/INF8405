@@ -2,7 +2,9 @@ package com.example.myapplication.Class;
 import static java.lang.Thread.sleep;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Pair;
 import android.widget.PopupMenu;
 
@@ -20,8 +22,6 @@ import java.util.logging.LogRecord;
 public class LevelPresenter {
     final Handler handler = new Handler();
     private int currentRecord = 0;
-    private int moveCount = 0;
-    private final MovesListener moves;
     private final int MAX_LEVEL = 3;
     private final LevelView levelView;
     private final Level level;
@@ -30,7 +30,7 @@ public class LevelPresenter {
         this.gameFragment = gameFragment;
         this.levelView = levelView;
         level = new Level();
-        moves = new MovesListener();
+
     }
     public void updateLevel(int id){
         clearMovesStack();
@@ -49,11 +49,10 @@ public class LevelPresenter {
         if(level.getCurrentLevel() <= 1){
             gameFragment.setPreviousVisibility(false);
         }
+        this.gameFragment.setMovesCounter(level.getMovesStack().size());
     }
 
     public void onNextLevel(){
-        moveCount = 0;
-        moves.set(moveCount);
         gameFragment.setPreviousVisibility(true);
         if(level.getCurrentLevel() < MAX_LEVEL){
             updateLevel(level.getCurrentLevel()+1);
@@ -61,8 +60,6 @@ public class LevelPresenter {
     }
 
     public void onPrevLevel(){
-        moveCount = 0;
-        moves.set(moveCount);
         gameFragment.setNextVisibility(true);
         if(level.getCurrentLevel() > 1){
             updateLevel(level.getCurrentLevel()-1);
@@ -73,33 +70,27 @@ public class LevelPresenter {
     }
 
     public void addToMoves(int id, int pos) {
-        moves.set(++moveCount);
         level.addToMoves(id,pos);
         this.gameFragment.setUndoVisibility(true);
+        this.gameFragment.setMovesCounter(level.getMovesStack().size());
     }
 
     public void onReset() {
-        moveCount = 0;
-        moves.set(moveCount);
         this.updateLevel(level.getCurrentLevel());
     }
 
     public void onUndo() {
-        moves.set(--moveCount);
         Pair<Integer,Integer> moveToUndo = this.level.getMovesStack().pop();
         this.levelView.undoMove(moveToUndo);
         if(this.level.getMovesStack().empty()){
             this.gameFragment.setUndoVisibility(false);
         }
+        this.gameFragment.setMovesCounter(level.getMovesStack().size());
     }
 
     public void clearMovesStack(){
         this.gameFragment.setUndoVisibility(false);
         this.level.getMovesStack().clear();
-    }
-
-    public MovesListener getMovesListener(){
-        return moves;
     }
 
     public int getCurrentRecord(){
@@ -135,4 +126,15 @@ public class LevelPresenter {
         gameFragment.setUndoVisibility(false);
     }
 
+    public void onWin() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(gameFragment.getContext());
+        int currentRecord = preferences.getInt(String.valueOf(getCurrentLevel()), 0);
+        int nMoves = level.getMovesStack().size();
+        if (nMoves < currentRecord){
+            setCurrentRecord(nMoves);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt(String.valueOf(getCurrentLevel()), getCurrentRecord());
+            editor.apply();
+        }
+    }
 }

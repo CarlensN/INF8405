@@ -63,7 +63,6 @@ public class GameFragment extends Fragment {
         levelView.setBlockSize(blockSize);
         levelView.displayMap(getContext());
         levelPresenter.updateLevel(1);
-        movesCounter.setText(String.valueOf(levelPresenter.getMovesListener().get()));
         setListeners();
     }
 
@@ -84,7 +83,7 @@ public class GameFragment extends Fragment {
         undoButton.setOnClickListener(view ->
                 this.levelPresenter.onUndo());
 
-        levelPresenter.getMovesListener().setOnIntegerChangeListener(value -> movesCounter.setText(String.valueOf(value)));
+
     }
 
     public void updateTopBarDisplay(int levelNumber, int minMoves) {
@@ -136,4 +135,7 @@ public class GameFragment extends Fragment {
         getActivity().getSupportFragmentManager().popBackStack();
     }
 
+    public void setMovesCounter(int numberMoves) {
+        movesCounter.setText(Integer.toString(numberMoves));
+    }
 }
