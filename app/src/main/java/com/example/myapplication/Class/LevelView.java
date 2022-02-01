@@ -65,4 +65,10 @@ public class LevelView extends RelativeLayout {
             }
         }
     }
+
+    public void removeListeners(){
+        for(Block block : blocks){
+            block.setOnTouchListener(null);
+        }
+    }
 }

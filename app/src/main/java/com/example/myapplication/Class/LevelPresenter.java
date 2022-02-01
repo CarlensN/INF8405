@@ -1,11 +1,24 @@
 package com.example.myapplication.Class;
+import static java.lang.Thread.sleep;
+
+import android.content.DialogInterface;
+import android.os.Handler;
 import android.util.Pair;
+import android.widget.PopupMenu;
+
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.myapplication.Fragments.GameFragment;
+import com.example.myapplication.Fragments.SuccessFragment;
+import com.example.myapplication.R;
 
 import java.util.ArrayList;
+import java.util.logging.LogRecord;
 
 public class LevelPresenter {
+    final Handler handler = new Handler();
     private int currentRecord = 0;
     private int moveCount = 0;
     private final MovesListener moves;
@@ -97,12 +110,29 @@ public class LevelPresenter {
         currentRecord = value;
     }
 
-    public void saveCurrentRecord(int level, int currentRecord){
-
-    }
-
     public int getCurrentLevel(){
         return level.getCurrentLevel();
+    }
+
+    public void showWinDialog(){
+        SuccessFragment dialog = new SuccessFragment(this);
+        dialog.show(gameFragment.getActivity().getSupportFragmentManager(), "fragment_success");
+        dialog.setCancelable(false);
+        Runnable runnable = () -> {
+            dialog.dismiss();
+            try {
+                sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            onNextLevel();
+        };
+        handler.postDelayed(runnable, 3000);
+    }
+
+    public void removeListeners(){
+        levelView.removeListeners();
+        gameFragment.setUndoVisibility(false);
     }
 
 }

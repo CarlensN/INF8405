@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 
 import androidx.core.content.res.ResourcesCompat;
 
+import com.example.myapplication.Fragments.SuccessFragment;
 import com.example.myapplication.R;
 
 public class BlockM extends BlockH {
@@ -30,15 +31,25 @@ public class BlockM extends BlockH {
         this.setOnTouchListener(null);
         this.animate().x(8*blockSize).start();
         saveRecord();
+        showWinDialog();
+        levelPresenter.removeListeners();
     }
 
     private void saveRecord() {
-        levelPresenter.setCurrentRecord(levelPresenter.getMovesListener().get());
+        int moves = levelPresenter.getMovesListener().get();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(String.valueOf(levelPresenter.getCurrentLevel()), levelPresenter.getCurrentRecord());
-        editor.apply();
+        int currentRecord = preferences.getInt(String.valueOf(levelPresenter.getCurrentLevel()), 0);
+
+        if (moves < currentRecord){
+            levelPresenter.setCurrentRecord(moves);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt(String.valueOf(levelPresenter.getCurrentLevel()), levelPresenter.getCurrentRecord());
+            editor.apply();
+        }
+
     }
 
-
+    private void showWinDialog(){
+        levelPresenter.showWinDialog();
+    }
 }

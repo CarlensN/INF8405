@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.example.myapplication.Fragments.GameFragment;
@@ -19,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(HomeFragment.class.getSimpleName())
                 .commit();
     }
-    private static final String TAG = "MainPageActivity";
 
     public void play(View view) {
         getSupportFragmentManager().beginTransaction()
@@ -29,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void exit(View view) {
-        Log.v(TAG, "exit");
         this.finish();
     }
 }
