@@ -89,15 +89,11 @@ public class GameFragment extends Fragment {
     public void updateTopBarDisplay(int levelNumber, int minMoves) {
         puzzleNumber.setText(String.valueOf(levelNumber));
         minimumMoves.setText(String.valueOf(minMoves));
-        displayRecord(levelNumber);
     }
 
-    private void displayRecord(int levelNumber) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-
-        int newRecord = preferences.getInt(String.valueOf(levelNumber), 0);
-        if (newRecord != 0){
-            recordCounter.setText(String.valueOf(newRecord));
+    public void displayRecord(int levelNumber) {
+        if (levelNumber != 0){
+            recordCounter.setText(String.valueOf(levelNumber));
         }
         else{
             recordCounter.setText("--");

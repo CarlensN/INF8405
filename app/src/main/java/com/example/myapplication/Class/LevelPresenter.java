@@ -21,19 +21,22 @@ import java.util.logging.LogRecord;
 
 public class LevelPresenter {
     final Handler handler = new Handler();
-    private int currentRecord = 0;
     private final int MAX_LEVEL = 3;
     private final LevelView levelView;
     private final Level level;
     private final GameFragment gameFragment;
+    SharedPreferences preferences;
     public LevelPresenter(GameFragment gameFragment, LevelView levelView){
         this.gameFragment = gameFragment;
         this.levelView = levelView;
+        preferences = PreferenceManager.getDefaultSharedPreferences(gameFragment.getContext());
         level = new Level();
 
     }
     public void updateLevel(int id){
         clearMovesStack();
+        int currentRecord = preferences.getInt(String.valueOf(id), 0);
+        gameFragment.displayRecord(currentRecord);
         int levelResId = gameFragment.getResources().getIdentifier(
                 "level" + id,
                 "raw",
@@ -93,13 +96,7 @@ public class LevelPresenter {
         this.level.getMovesStack().clear();
     }
 
-    public int getCurrentRecord(){
-        return currentRecord;
-    }
 
-    public void setCurrentRecord(int value){
-        currentRecord = value;
-    }
 
     public int getCurrentLevel(){
         return level.getCurrentLevel();
@@ -127,13 +124,11 @@ public class LevelPresenter {
     }
 
     public void onWin() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(gameFragment.getContext());
         int currentRecord = preferences.getInt(String.valueOf(getCurrentLevel()), 0);
         int nMoves = level.getMovesStack().size();
         if (nMoves < currentRecord){
-            setCurrentRecord(nMoves);
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putInt(String.valueOf(getCurrentLevel()), getCurrentRecord());
+            editor.putInt(String.valueOf(getCurrentLevel()), nMoves);
             editor.apply();
         }
     }

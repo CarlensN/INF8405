@@ -27,10 +27,10 @@ public class BlockM extends BlockH {
     }
 
     private void win() {
+        levelPresenter.onWin();
         this.setClickable(false);
         this.setOnTouchListener(null);
         this.animate().x(8*blockSize).start();
-        levelPresenter.onWin();
         showWinDialog();
         levelPresenter.removeListeners();
     }
