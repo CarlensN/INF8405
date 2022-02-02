@@ -126,7 +126,7 @@ public class LevelPresenter {
     public void onWin() {
         int currentRecord = preferences.getInt(String.valueOf(getCurrentLevel()), 0);
         int nMoves = level.getMovesStack().size();
-        if (nMoves < currentRecord){
+        if (nMoves < currentRecord || currentRecord == 0){
             SharedPreferences.Editor editor = preferences.edit();
             editor.putInt(String.valueOf(getCurrentLevel()), nMoves);
             editor.apply();
