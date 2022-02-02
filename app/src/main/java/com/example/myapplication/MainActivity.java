@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.myapplication.Fragments.AboutFragment;
 import com.example.myapplication.Fragments.GameFragment;
 import com.example.myapplication.Fragments.HomeFragment;
 
@@ -28,6 +29,12 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
+    public void About(View view) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new AboutFragment())
+                .addToBackStack(AboutFragment.class.getSimpleName())
+                .commit();
+    }
     public void exit(View view) {
         Log.v(TAG, "exit");
         this.finish();
