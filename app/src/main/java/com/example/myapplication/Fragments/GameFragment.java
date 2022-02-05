@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.myapplication.Class.LevelPresenter;
@@ -25,11 +26,11 @@ public class GameFragment extends Fragment {
     TextView recordCounter = null;
     TextView minimumMoves = null;
     TextView movesCounter = null;
-    Button nextButton = null;
-    Button prevButton = null;
-    Button pauseButton = null;
-    Button undoButton = null;
-    Button resetButton = null;
+    ImageButton nextButton = null;
+    ImageButton prevButton = null;
+    ImageButton pauseButton = null;
+    ImageButton undoButton = null;
+    ImageButton resetButton = null;
 
     public GameFragment() {
         // Required empty public constructor

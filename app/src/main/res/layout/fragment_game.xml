@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="#b18b44"
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,76 +14,83 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:elevation="5dp"
             android:id="@+id/puzzle_level"
-            android:layout_width="250dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            android:layout_width="450dp"
+            android:layout_height="250dp"
+            android:background="@drawable/puzzle_background"
+            app:layout_constraintBottom_toTopOf="@+id/levelContainer"
             app:layout_constraintEnd_toStartOf="@+id/move_score_layout"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toStartOf="parent">
 
             <TextView
                 android:id="@+id/puzzle_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Puzzle"
+                android:textColor="@color/white"
+                android:textSize="50sp"
+                app:layout_constraintBottom_toTopOf="@+id/puzzle_number"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/puzzle_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:text="TextView"
+                android:textColor="@color/white"
+                android:textSize="60sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/puzzle_title" />
+                app:layout_constraintTop_toBottomOf="@+id/puzzle_title"
+                tools:ignore="HardcodedText" />
 
-            <Button
+            <ImageButton
+                app:srcCompat="@drawable/ic_baseline_arrow_back_ios_24"
+                android:backgroundTint="@color/level_background"
                 android:id="@+id/previous_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Prev."
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/next_button"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/puzzle_number" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
 
-            <Button
+            <ImageButton
+                app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
+                android:background="@color/level_background"
                 android:id="@+id/next_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Next"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/previous_button"
-                app:layout_constraintTop_toBottomOf="@+id/puzzle_number" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/move_score_layout"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginEnd="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:background="@drawable/puzzle_background"
+            app:layout_constraintBottom_toTopOf="@+id/levelContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/puzzle_level"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toEndOf="@+id/puzzle_level">
 
             <TextView
                 android:id="@+id/moves_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Moves"
+                android:textColor="@color/white"
+                android:textSize="50sp"
                 app:layout_constraintBottom_toTopOf="@+id/moves_counter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -92,8 +100,10 @@
                 android:id="@+id/moves_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:text="TextView"
+                android:textColor="@color/white"
+                android:textSize="60sp"
+                app:layout_constraintBottom_toTopOf="@+id/record_counter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/moves_title" />
@@ -102,7 +112,10 @@
                 android:id="@+id/record_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="Record:"
+                android:textColor="@color/white"
+                android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -113,6 +126,8 @@
                 android:layout_marginStart="7dp"
                 android:layout_marginEnd="10dp"
                 android:text="--"
+                android:textColor="@color/white"
+                android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/separator"
                 app:layout_constraintStart_toEndOf="@+id/record_title" />
@@ -121,7 +136,10 @@
                 android:id="@+id/minimumMoves"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="M"
+                android:textColor="@color/white"
+                android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -131,6 +149,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:text="/"
+                android:textColor="@color/white"
+                android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/minimumMoves" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -152,37 +172,40 @@
 
         </com.example.myapplication.Class.LevelView>
 
-        <Button
+        <ImageButton
+            android:elevation="5dp"
+            app:srcCompat="@drawable/ic_baseline_pause_24"
+            android:backgroundTint="#b18b44"
             android:id="@+id/pause_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="40dp"
-            android:onClick="pause"
             android:text="Pause"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/levelContainer"
             tools:ignore="UsingOnClickInXml" />
 
-        <Button
+        <ImageButton
+            android:elevation="5dp"
             android:id="@+id/undoButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_marginEnd="20dp"
-            android:text="Undo"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/resetButton" />
+            android:backgroundTint="#b18b44"
+            app:layout_constraintEnd_toStartOf="@+id/resetButton"
+            app:layout_constraintTop_toBottomOf="@+id/levelContainer"
+            app:srcCompat="@drawable/ic_baseline_undo_24" />
 
-        <Button
+        <ImageButton
+            android:elevation="5dp"
             android:id="@+id/resetButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_marginEnd="20dp"
-            android:text="Reset"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:backgroundTint="#b18b44"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/levelContainer"
+            app:srcCompat="@drawable/ic_baseline_refresh_24" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline3"

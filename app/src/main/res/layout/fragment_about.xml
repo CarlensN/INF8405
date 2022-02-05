@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#b18b44">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,9 +16,9 @@
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="374dp"
             android:background="@drawable/icone"
-            android:textSize="50dp"
+            android:textSize="70sp"
             android:textStyle="bold"
             tools:srcCompat="@drawable/icone" />
 
@@ -31,7 +31,7 @@
             android:gravity="center"
             android:padding="20dp"
             android:text="@string/hello_about_fragment"
-            android:textSize="24sp"
+            android:textSize="50sp"
             android:textStyle="bold" />
 
 
