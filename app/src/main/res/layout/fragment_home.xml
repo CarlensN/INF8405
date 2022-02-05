@@ -20,6 +20,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <Button
+        android:id="@+id/About"
+        android:layout_width="88dp"
+        android:layout_height="49dp"
+        android:onClick="About"
+        android:text="About"
+        app:layout_constraintBottom_toTopOf="@+id/exit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/play" />
+    " />
+
     <Button
         android:id="@+id/exit"
         android:layout_width="wrap_content"
