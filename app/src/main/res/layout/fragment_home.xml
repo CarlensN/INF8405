@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:background="#21a3ff"
     android:id="@+id/home_fragment"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -9,23 +10,42 @@
     tools:context=".Fragments.HomeFragment">
 
     <Button
+        android:backgroundTint="#b18b44"
         android:id="@+id/play"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:onClick="play"
         android:text="Play"
+        android:textSize="50sp"
         app:layout_constraintBottom_toTopOf="@+id/exit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <Button
+        android:backgroundTint="#b18b44"
+        android:id="@+id/About"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:onClick="About"
+        android:text="About"
+        android:textSize="50sp"
+        app:layout_constraintBottom_toTopOf="@+id/exit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/play" />
+    " />
+
+    <Button
+        android:backgroundTint="#b18b44"
         android:id="@+id/exit"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:onClick="exit"
         android:text="Exit"
+        android:textSize="50sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

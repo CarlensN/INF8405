@@ -1,27 +1,41 @@
 package com.example.myapplication.Class;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.MotionEvent;
 
+import androidx.core.content.res.ResourcesCompat;
+
+import com.example.myapplication.Fragments.SuccessFragment;
 import com.example.myapplication.R;
 
 public class BlockM extends BlockH {
     public BlockM(Context context, int nUnits, int blockSize) {
         super(context, nUnits, blockSize);
-        this.setImageDrawable(getResources().getDrawable(R.drawable.main_block));
+        this.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.main_block, null));
     }
 
     @Override
     public void touchMove(MotionEvent motionEvent) {
-        x += motionEvent.getX() - this.offsetX;
-        if(x < blockSize) {
-            x = blockSize;
-        }else if(x + (nUnits -1) *blockSize > 6 * blockSize){
+        int x = (int) (this.x+motionEvent.getX() - this.offsetX);
+        if(boundaryRight == 6 && x + (nUnits -1) *blockSize >= 5 * blockSize ){
             win();
+            return;
         }
-        this.setTranslationX(x);
+        super.touchMove(motionEvent);
     }
 
     private void win() {
+        levelPresenter.onWin();
+        this.setClickable(false);
+        this.setOnTouchListener(null);
+        this.animate().x(8*blockSize).start();
+        showWinDialog();
+        levelPresenter.removeListeners();
+    }
+
+    private void showWinDialog(){
+        levelPresenter.showWinDialog();
     }
 }
