@@ -2,6 +2,8 @@ package com.example.tp2;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -13,6 +15,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final int REQUEST_ENABLE_BT = 0;
     private GoogleMap mMap;
 
     @Override
@@ -39,8 +42,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng polytechnique = new LatLng(45.50483899488434, -73.61321528747229);
+        mMap.addMarker(new MarkerOptions().position(polytechnique).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(polytechnique, 15));
     }
 }
