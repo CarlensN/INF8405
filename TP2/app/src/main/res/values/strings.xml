@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">TP2</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoicnlsb2ciLCJhIjoiY2wwMzV6ODM2MHpneDNpcWcwdnZsd2FqaSJ9.KZ3tA7KMZ08xWSRtXhDQyw</string>
 </resources>
