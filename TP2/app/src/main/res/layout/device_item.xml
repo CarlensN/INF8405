@@ -11,47 +11,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Device name"
-        android:textSize="20sp"/>
+        android:textSize="15sp"
+        android:textColor="@color/textColor"
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/tvMacAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Mac Address"
-        android:textSize="20sp"/>
+        android:textSize="15sp"
+        android:textColor="@color/textColor"
+        android:gravity="center"/>
 
-    <TextView
-        android:id="@+id/tvDeviceAlias"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Device alias"
-        android:textSize="20sp"/>
 
     <TextView
         android:id="@+id/tvDevicetype"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Device type"
-        android:textSize="20sp"/>
+        android:textSize="15sp"
+        android:textColor="@color/textColor"
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/tvDeviceClass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Device class"
-        android:textSize="20sp"/>
+        android:textSize="15sp"
+        android:textColor="@color/textColor"
+        android:gravity="center"/>
 
-    <TextView
-        android:id="@+id/tvDeviceBondState"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Device Bond State"
-        android:textSize="20sp"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@android:color/darker_gray"/>
+        android:background="@android:color/darker_gray"
+        android:backgroundTint="@color/textColor"/>
 
 
 </LinearLayout>

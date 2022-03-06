@@ -22,7 +22,6 @@ class DeviceAdapter(var devices : List<BluetoothDevice>) :
     inner class DeviceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val tvDeviceName : TextView = itemView.findViewById(R.id.tvDeviceName)
         val tvMacAddress : TextView = itemView.findViewById(R.id.tvMacAddress)
-        val tvDeviceAlias : TextView = itemView.findViewById(R.id.tvDeviceAlias)
         val tvDeviceType : TextView = itemView.findViewById(R.id.tvDevicetype)
         val tvDeviceClass : TextView = itemView.findViewById(R.id.tvDeviceClass)
         val tvDeviceState : TextView = itemView.findViewById(R.id.tvDeviceBondState)
@@ -38,7 +37,6 @@ class DeviceAdapter(var devices : List<BluetoothDevice>) :
     override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
         holder.tvDeviceName.text = devices[position].name
         holder.tvMacAddress.text = devices[position].address
-        holder.tvDeviceAlias.text = devices[position].alias
         holder.tvDeviceType.text = getDeviceType(devices[position].type)
         holder.tvDeviceClass.text = devices[position].bluetoothClass.deviceClass.toString()
         holder.tvDeviceState.text = devices[position].bondState.toString()

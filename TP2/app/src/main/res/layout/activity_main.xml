@@ -19,7 +19,7 @@
         android:id="@+id/layoutDeviceSide"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="3"
+        android:layout_weight="2"
         android:orientation="vertical"
         android:gravity="center">
 
@@ -35,7 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Swap Theme"
-            android:backgroundTint="@color/black"/>
+            android:textColor="@color/buttonTextColor"
+            android:backgroundTint="@color/buttonColor"/>
 
     </LinearLayout>
 

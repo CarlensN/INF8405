@@ -5,33 +5,36 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.Window
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mapbox.android.core.location.LocationEngineProvider
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.expressions.dsl.generated.interpolate
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity(), PermissionsListener {
@@ -40,6 +43,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var deviceAdapter: DeviceAdapter
+    private lateinit var deviceList: ArrayList<BluetoothDevice>
+    private lateinit var btnSwapTheme: Button
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,9 +52,17 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
         mapView = findViewById<View>(R.id.mapView) as MapView
+        btnSwapTheme = findViewById(R.id.btnSwapTheme)
         map = mapView.getMapboxMap()
+        deviceList = ArrayList()
+        deviceAdapter = DeviceAdapter(deviceList)
+        val deviceRecyclerView = findViewById<RecyclerView>(R.id.rvDeviceListeviceList)
+        deviceRecyclerView.layoutManager = LinearLayoutManager(this.applicationContext)
+        deviceRecyclerView.adapter = deviceAdapter
         handlePermissions()
     }
+
+
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun handlePermissions(){
@@ -62,20 +75,15 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
 
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            requestMultiplePermissions.launch(arrayOf(
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT))
-        }*/
         if (!bluetoothAdapter.isEnabled){
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             requestBluetooth.launch(enableBtIntent)
         }
         else{
-            getPairedDevices()
+            discoverDevices()
         }
-
     }
+
 
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.R)
@@ -101,13 +109,48 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         }*/
     }
 
+    private fun discoverDevices(){
+        val filter = IntentFilter()
+        filter.addAction(BluetoothDevice.ACTION_FOUND)
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+        registerReceiver(receiver, filter)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        bluetoothAdapter.startDiscovery()
+    }
+
+    private val receiver = object : BroadcastReceiver(){
+        @SuppressLint("MissingPermission")
+        override fun onReceive(context: Context, intent: Intent?) {
+            val action : String? = intent?.action
+            when(action){
+                BluetoothDevice.ACTION_FOUND ->{
+                    val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    Log.d("device", "${device?.name} + ${device?.address}")
+                    if (device != null) {
+                        deviceList.add(deviceAdapter.itemCount, device)
+                        deviceAdapter.notifyItemInserted(deviceAdapter.itemCount)
+                    }
+                }
+            }
+        }
+
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     private var requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             //granted
-            getPairedDevices()
+            //getPairedDevices()
+            discoverDevices()
         }else{
-            //deny
+            return@registerForActivityResult
         }
     }
 
@@ -172,5 +215,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
        if(p0){
            onMapReady();
        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onDestroy() {
+        unregisterReceiver(receiver)
+        deviceList.clear()
+        deviceAdapter.notifyDataSetChanged()
+        super.onDestroy()
     }
 }
