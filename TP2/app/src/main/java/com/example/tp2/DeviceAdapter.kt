@@ -15,21 +15,28 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.maps.extension.style.expressions.dsl.generated.switchCase
 
-class DeviceAdapter(var devices : List<BluetoothDevice>) :
+class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
     RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
+    var devices: ArrayList<BluetoothDevice> = ArrayList()
 
 
-    inner class DeviceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    inner class DeviceViewHolder(itemView: View, private val onItemClicked: (position: Int) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
         val tvDeviceName : TextView = itemView.findViewById(R.id.tvDeviceName)
         val tvMacAddress : TextView = itemView.findViewById(R.id.tvMacAddress)
-        val tvDeviceType : TextView = itemView.findViewById(R.id.tvDevicetype)
-        val tvDeviceClass : TextView = itemView.findViewById(R.id.tvDeviceClass)
-        val tvDeviceState : TextView = itemView.findViewById(R.id.tvDeviceBondState)
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View) {
+            val position = adapterPosition
+            onItemClicked(position)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.device_item, parent, false)
-        return DeviceViewHolder(view)
+        return DeviceViewHolder(view, onItemClicked)
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -37,9 +44,6 @@ class DeviceAdapter(var devices : List<BluetoothDevice>) :
     override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
         holder.tvDeviceName.text = devices[position].name
         holder.tvMacAddress.text = devices[position].address
-        holder.tvDeviceType.text = getDeviceType(devices[position].type)
-        holder.tvDeviceClass.text = devices[position].bluetoothClass.deviceClass.toString()
-        holder.tvDeviceState.text = devices[position].bondState.toString()
     }
 
     private fun getDeviceType(type: Int): String {
@@ -64,5 +68,16 @@ class DeviceAdapter(var devices : List<BluetoothDevice>) :
 
     override fun getItemCount(): Int {
         return devices.size
+    }
+
+    @JvmName("setDeviceList1")
+    public fun setDeviceList(list : ArrayList<BluetoothDevice>){
+        devices = list
+        notifyDataSetChanged()
+    }
+
+    fun clear(){
+        devices.clear()
+        notifyDataSetChanged()
     }
 }

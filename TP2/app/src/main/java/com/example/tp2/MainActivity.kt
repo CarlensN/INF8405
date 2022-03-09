@@ -2,6 +2,7 @@ package com.example.tp2
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -10,7 +11,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -20,11 +20,10 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.maps.CameraOptions
@@ -34,32 +33,58 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
-import kotlin.properties.Delegates
 
 
-class MainActivity : AppCompatActivity(), PermissionsListener {
+class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var deviceAdapter: DeviceAdapter
-    private lateinit var deviceList: ArrayList<BluetoothDevice>
+    private lateinit var favoriteAdapter: DeviceAdapter
+    private lateinit var discoveredDevices: ArrayList<BluetoothDevice>
+    private lateinit var favoriteDevices: ArrayList<BluetoothDevice>
     private lateinit var btnSwapTheme: Button
+    private lateinit var tabLayout: TabLayout
+    private lateinit var viewPager: ViewPager
+    private lateinit var deviceFragment: DeviceFragment
+    private lateinit var favoriteFragment: FavoriteFragment
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
+        setUpFragments()
+        tabLayout = findViewById(R.id.tabLayout)
+        viewPager = findViewById(R.id.viewPager)
         mapView = findViewById<View>(R.id.mapView) as MapView
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
         map = mapView.getMapboxMap()
-        deviceList = ArrayList()
-        deviceAdapter = DeviceAdapter(deviceList)
-        val deviceRecyclerView = findViewById<RecyclerView>(R.id.rvDeviceListeviceList)
-        deviceRecyclerView.layoutManager = LinearLayoutManager(this.applicationContext)
-        deviceRecyclerView.adapter = deviceAdapter
+        discoveredDevices = ArrayList()
+        favoriteDevices = ArrayList()
         handlePermissions()
+        setUpTabs()
+    }
+
+    private fun setUpTabs(){
+        val adapter = ViewPagerAdapter(supportFragmentManager)
+        adapter.addFragment(deviceFragment, "Devices")
+        adapter.addFragment(favoriteFragment, "Favorites")
+        viewPager.adapter = adapter
+        tabLayout.setupWithViewPager(viewPager)
+    }
+
+    private fun setUpFragments(){
+        deviceFragment = DeviceFragment()
+        favoriteFragment = FavoriteFragment()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun onRecyclerViewItemClick(position: Int){
+        //Toast.makeText(this, deviceAdapter.devices[position].name, Toast.LENGTH_SHORT).show()
+        val dialog = Dialog(this)
+        dialog.show()
     }
 
 
@@ -82,31 +107,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         else{
             discoverDevices()
         }
-    }
-
-
-    @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun getPairedDevices(){
-        val pairedDevices: Set<BluetoothDevice> = bluetoothAdapter.bondedDevices
-        if (pairedDevices.isNotEmpty()){
-            val list: List<BluetoothDevice> = pairedDevices.toList()
-            deviceAdapter = DeviceAdapter(list)
-            val deviceRecyclerView = findViewById<RecyclerView>(R.id.rvDeviceListeviceList)
-            deviceRecyclerView.layoutManager = LinearLayoutManager(this.applicationContext)
-            deviceRecyclerView.adapter = deviceAdapter
-        }
-
-        /*pairedDevices.forEach { device ->
-            val deviceName = device.name
-            val deviceHardwareAddress = device.address // MAC address
-            val alias = device.alias
-            val type = device.type
-            val bclass = device.bluetoothClass
-            val bondstate = device.bondState
-
-            Log.d("device", "$deviceName ---- $deviceHardwareAddress")
-        }*/
     }
 
     private fun discoverDevices(){
@@ -134,9 +134,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     Log.d("device", "${device?.name} + ${device?.address}")
                     if (device != null) {
-                        deviceList.add(deviceAdapter.itemCount, device)
-                        deviceAdapter.notifyItemInserted(deviceAdapter.itemCount)
+                        deviceFragment.addDevice(device)
+                        //favoriteFragment.addDevice(device)
                     }
+                }
+
+                BluetoothAdapter.ACTION_DISCOVERY_FINISHED ->{
+                    Toast.makeText(context, "Scanning Done", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -146,20 +150,12 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     @RequiresApi(Build.VERSION_CODES.R)
     private var requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
-            //granted
-            //getPairedDevices()
             discoverDevices()
         }else{
             return@registerForActivityResult
         }
     }
 
-    private val requestMultiplePermissions =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            permissions.entries.forEach {
-                Log.d("test006", "${it.key} = ${it.value}")
-            }
-        }
 
     private fun onMapReady() {
        map.setCamera(
@@ -220,8 +216,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     @SuppressLint("NotifyDataSetChanged")
     override fun onDestroy() {
         unregisterReceiver(receiver)
-        deviceList.clear()
-        deviceAdapter.notifyDataSetChanged()
+        deviceAdapter.clear()
+        favoriteAdapter.clear()
         super.onDestroy()
     }
 }

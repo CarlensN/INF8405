@@ -24,26 +24,6 @@
         android:textColor="@color/textColor"
         android:gravity="center"/>
 
-
-    <TextView
-        android:id="@+id/tvDevicetype"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Device type"
-        android:textSize="15sp"
-        android:textColor="@color/textColor"
-        android:gravity="center"/>
-
-    <TextView
-        android:id="@+id/tvDeviceClass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Device class"
-        android:textSize="15sp"
-        android:textColor="@color/textColor"
-        android:gravity="center"/>
-
-
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"

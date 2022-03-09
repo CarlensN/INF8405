@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -15,7 +15,7 @@
         mapbox:mapbox_cameraZoom="18.0"
         android:layout_weight="1"/>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutDeviceSide"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,22 +23,55 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvDeviceListeviceList"
+        <!--<androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvDeviceList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="9"
-            tools:listitem="@layout/device_item"/>
+            tools:listitem="@layout/device_item"/>-->
+
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Devices" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Favorites" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="310dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tabLayout"/>
+
 
         <Button
             android:id="@+id/btnSwapTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/buttonColor"
             android:text="Swap Theme"
             android:textColor="@color/buttonTextColor"
-            android:backgroundTint="@color/buttonColor"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </LinearLayout>
