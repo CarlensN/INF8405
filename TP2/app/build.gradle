@@ -10,7 +10,7 @@ android {
         applicationId "com.example.tp2"
         minSdk 22
         maxSdk 24
-        targetSdk 31
+        targetSdk 25
         versionCode 1
         versionName "1.0"
 

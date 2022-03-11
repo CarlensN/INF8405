@@ -50,12 +50,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var deviceFragment: DeviceFragment
     private lateinit var favoriteFragment: FavoriteFragment
 
-    @RequiresApi(Build.VERSION_CODES.R)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
-        setUpFragments()
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewPager)
         mapView = findViewById<View>(R.id.mapView) as MapView
@@ -63,8 +62,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         map = mapView.getMapboxMap()
         discoveredDevices = ArrayList()
         favoriteDevices = ArrayList()
-        handlePermissions()
+        setBluetoothAdapter()
+        setUpFragments()
         setUpTabs()
+        handlePermissions()
     }
 
     private fun setUpTabs(){
@@ -89,7 +90,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
 
 
-    @RequiresApi(Build.VERSION_CODES.R)
+
     private fun handlePermissions(){
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
             onMapReady()
@@ -97,33 +98,26 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             permissionsManager = PermissionsManager(this)
             permissionsManager.requestLocationPermissions(this)
         }
-        val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
-        bluetoothAdapter = bluetoothManager.adapter
 
-        if (!bluetoothAdapter.isEnabled){
-            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            requestBluetooth.launch(enableBtIntent)
-        }
-        else{
-            discoverDevices()
-        }
+        discoverDevices()
     }
 
+    private fun setBluetoothAdapter(){
+        val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
+        bluetoothAdapter = bluetoothManager.adapter
+    }
+
+    @SuppressLint("MissingPermission")
     private fun discoverDevices(){
         val filter = IntentFilter()
         filter.addAction(BluetoothDevice.ACTION_FOUND)
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
         registerReceiver(receiver, filter)
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_SCAN
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
         bluetoothAdapter.startDiscovery()
+
     }
+
 
     private val receiver = object : BroadcastReceiver(){
         @SuppressLint("MissingPermission")
@@ -139,6 +133,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                     }
                 }
 
+                BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
+                    Toast.makeText(context, "Starting device discovery", Toast.LENGTH_SHORT).show()
+                }
+
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED ->{
                     Toast.makeText(context, "Scanning Done", Toast.LENGTH_SHORT).show()
                 }
@@ -146,16 +144,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
 
     }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private var requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            discoverDevices()
-        }else{
-            return@registerForActivityResult
-        }
-    }
-
 
     private fun onMapReady() {
        map.setCamera(
@@ -216,8 +204,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     @SuppressLint("NotifyDataSetChanged")
     override fun onDestroy() {
         unregisterReceiver(receiver)
-        deviceAdapter.clear()
-        favoriteAdapter.clear()
         super.onDestroy()
     }
 }
