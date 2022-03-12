@@ -59,6 +59,7 @@ class DeviceFragment() : Fragment() {
     }
 
     fun addDevices(list: List<Device>){
+        adapter.clear()
         adapter.devices.addAll(list)
         adapter.notifyDataSetChanged()
     }

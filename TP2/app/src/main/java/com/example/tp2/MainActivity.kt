@@ -1,24 +1,18 @@
 package com.example.tp2
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.*
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.app.ActivityCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
@@ -159,7 +153,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 BluetoothDevice.ACTION_FOUND ->{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     Log.d("device", "${device?.name} + ${device?.address}")
-                    if (device != null && device.name != "") {
+                    if (device != null && device.name != null) {
                         val formattedDevice = Device(device.name, device.address, device.bluetoothClass, device.type)
                         //deviceFragment.addDevice(formattedDevice)
                         newDevices.add(formattedDevice)
