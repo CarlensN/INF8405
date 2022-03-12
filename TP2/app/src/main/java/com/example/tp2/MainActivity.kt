@@ -1,23 +1,25 @@
 package com.example.tp2
 
-import android.Manifest
-import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.mapbox.android.core.location.LocationEngineProvider
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
+import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.expressions.dsl.generated.interpolate
+import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.LocationPuck2D
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
     private lateinit var permissionsManager: PermissionsManager
+    private lateinit var pointAnnotationManager:PointAnnotationManager
 
 
 
@@ -40,8 +43,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             permissionsManager = PermissionsManager(this)
             permissionsManager.requestLocationPermissions(this)
         }
-
-
+        val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
+        if (bitmap != null) {
+            prepareAnnotationMarker(mapView, bitmap, Point.fromLngLat(0.0,5.0))
+        }
     }
 
     private fun onMapReady() {
@@ -81,6 +86,41 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                     com.mapbox.maps.plugin.locationcomponent.R.drawable.mapbox_user_stroke_icon
                 ),
             )
+        }
+    }
+
+    private fun prepareAnnotationMarker(mapView: MapView, iconBitmap: Bitmap, point: Point) {
+        val annotationPlugin = mapView.annotations
+        val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+            .withPoint(point)
+            .withIconImage(iconBitmap)
+            .withIconAnchor(IconAnchor.BOTTOM)
+        pointAnnotationManager = annotationPlugin.createPointAnnotationManager()
+        pointAnnotationManager.create(pointAnnotationOptions)
+        pointAnnotationManager.addClickListener { clickedAnnotation ->
+            true
+        }
+    }
+
+    private fun convertDrawableToBitmap(id: Int): Bitmap? {
+        val sourceDrawable = AppCompatResources.getDrawable(this,id)
+        if (sourceDrawable == null) {
+            return null
+        }
+        return if (sourceDrawable is BitmapDrawable) {
+            sourceDrawable.bitmap
+        } else {
+// copying drawable object to not manipulate on the same reference
+            val constantState = sourceDrawable.constantState ?: return null
+            val drawable = constantState.newDrawable().mutate()
+            val bitmap: Bitmap = Bitmap.createBitmap(
+                drawable.intrinsicWidth, drawable.intrinsicHeight,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            bitmap
         }
     }
 
