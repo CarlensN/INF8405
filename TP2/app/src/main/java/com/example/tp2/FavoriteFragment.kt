@@ -46,7 +46,7 @@ class FavoriteFragment : Fragment() {
         return adapter
     }
 
-    fun getDevices() : ArrayList<BluetoothDevice>{
+    fun getDevices() : ArrayList<Device>{
         return adapter.devices
     }
 
@@ -54,7 +54,7 @@ class FavoriteFragment : Fragment() {
         return recyclerView
     }
 
-    fun addDevice(device: BluetoothDevice){
+    fun addDevice(device: Device){
         adapter.devices.add(adapter.itemCount, device)
         adapter.notifyItemInserted(adapter.itemCount)
     }

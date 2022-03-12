@@ -6,10 +6,7 @@ import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -24,6 +21,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.maps.CameraOptions
@@ -33,17 +32,21 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import java.lang.reflect.Type
 
 
 class MainActivity : AppCompatActivity(), PermissionsListener{
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var deviceAdapter: DeviceAdapter
     private lateinit var favoriteAdapter: DeviceAdapter
-    private lateinit var discoveredDevices: ArrayList<BluetoothDevice>
-    private lateinit var favoriteDevices: ArrayList<BluetoothDevice>
+    private lateinit var discoveredDevices: ArrayList<Device>
+    private lateinit var favoriteDevices: ArrayList<Device>
+    private lateinit var newDevices: ArrayList<Device>
     private lateinit var btnSwapTheme: Button
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager
@@ -60,12 +63,42 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         mapView = findViewById<View>(R.id.mapView) as MapView
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
         map = mapView.getMapboxMap()
-        discoveredDevices = ArrayList()
+        setSharedPreferences()
+        discoveredDevices = getDiscovered()
         favoriteDevices = ArrayList()
+        newDevices = ArrayList()
         setBluetoothAdapter()
         setUpFragments()
         setUpTabs()
         handlePermissions()
+    }
+
+    private fun setSharedPreferences(){
+        sharedPreferences = getSharedPreferences("save", MODE_PRIVATE)
+        editor = sharedPreferences.edit()
+    }
+
+    private fun setDiscoveredList(key: String, list: List<Device>){
+        val gson = Gson()
+        val json : String = gson.toJson(list)
+        set(key, json)
+    }
+
+    operator fun set(key: String?, value: String?) {
+        editor.putString(key, value)
+        editor.commit()
+        displayDevices()
+    }
+
+    private fun getDiscovered(): ArrayList<Device> {
+        var arrayItems: ArrayList<Device> = ArrayList()
+        val serializedObject = sharedPreferences.getString("discovered", null)
+        if (serializedObject != null) {
+            val gson = Gson()
+            val type: Type = object : TypeToken<List<Device>?>() {}.type
+            arrayItems = gson.fromJson(serializedObject, type)
+        }
+        return arrayItems
     }
 
     private fun setUpTabs(){
@@ -115,7 +148,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
         registerReceiver(receiver, filter)
         bluetoothAdapter.startDiscovery()
-
     }
 
 
@@ -127,8 +159,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 BluetoothDevice.ACTION_FOUND ->{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     Log.d("device", "${device?.name} + ${device?.address}")
-                    if (device != null) {
-                        deviceFragment.addDevice(device)
+                    if (device != null && device.name != "") {
+                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass, device.type)
+                        //deviceFragment.addDevice(formattedDevice)
+                        newDevices.add(formattedDevice)
                         //favoriteFragment.addDevice(device)
                     }
                 }
@@ -138,11 +172,26 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 }
 
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED ->{
+                    addNewDevices(newDevices)
+                    newDevices.clear()
                     Toast.makeText(context, "Scanning Done", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
+    }
+
+    private fun displayDevices(){
+        deviceFragment.addDevices(discoveredDevices)
+    }
+
+    private fun addNewDevices(list: List<Device>){
+        for(item in list){
+            if (!discoveredDevices.contains(item)){
+                discoveredDevices.add(item)
+            }
+        }
+        setDiscoveredList("discovered", discoveredDevices)
     }
 
     private fun onMapReady() {

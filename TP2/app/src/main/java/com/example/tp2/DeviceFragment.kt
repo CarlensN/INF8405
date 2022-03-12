@@ -45,7 +45,7 @@ class DeviceFragment() : Fragment() {
         return adapter
     }
 
-    fun getDevices() : ArrayList<BluetoothDevice>{
+    fun getDevices() : ArrayList<Device>{
         return adapter.devices
     }
 
@@ -53,8 +53,13 @@ class DeviceFragment() : Fragment() {
         return recyclerView
     }
 
-    fun addDevice(device: BluetoothDevice){
+    fun addDevice(device: Device){
         adapter.devices.add(adapter.itemCount, device)
         adapter.notifyItemInserted(adapter.itemCount)
+    }
+
+    fun addDevices(list: List<Device>){
+        adapter.devices.addAll(list)
+        adapter.notifyDataSetChanged()
     }
 }

@@ -17,7 +17,7 @@ import com.mapbox.maps.extension.style.expressions.dsl.generated.switchCase
 
 class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
     RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
-    var devices: ArrayList<BluetoothDevice> = ArrayList()
+    var devices: ArrayList<Device> = ArrayList()
 
 
     inner class DeviceViewHolder(itemView: View, private val onItemClicked: (position: Int) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
@@ -71,7 +71,7 @@ class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
     }
 
     @JvmName("setDeviceList1")
-    public fun setDeviceList(list : ArrayList<BluetoothDevice>){
+    public fun setDeviceList(list : ArrayList<Device>){
         devices = list
         notifyDataSetChanged()
     }
