@@ -3,7 +3,6 @@ package com.example.tp2
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.*
@@ -59,8 +58,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
         map = mapView.getMapboxMap()
         setSharedPreferences()
-        discoveredDevices = getDiscovered()
-        favoriteDevices = ArrayList()
+        discoveredDevices = getListFromPreferences("discovered")
+        favoriteDevices = getListFromPreferences("favorites")
         newDevices = ArrayList()
         setBluetoothAdapter()
         setUpFragments()
@@ -73,7 +72,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         editor = sharedPreferences.edit()
     }
 
-    private fun setDiscoveredList(key: String, list: List<Device>){
+    private fun saveListToPreferences(key: String, list: List<Device>){
         val gson = Gson()
         val json : String = gson.toJson(list)
         set(key, json)
@@ -85,9 +84,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         displayDevices()
     }
 
-    private fun getDiscovered(): ArrayList<Device> {
+    private fun getListFromPreferences(key: String): ArrayList<Device> {
         var arrayItems: ArrayList<Device> = ArrayList()
-        val serializedObject = sharedPreferences.getString("discovered", null)
+        val serializedObject = sharedPreferences.getString(key, null)
         if (serializedObject != null) {
             val gson = Gson()
             val type: Type = object : TypeToken<List<Device>?>() {}.type
@@ -176,13 +175,17 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
     }
 
-    fun saveFavorite(device: Device){
-        favoriteDevices.add(device)
-        favoriteFragment.addDevices(favoriteDevices)
+    fun addFavorite(device: Device){
+        if (!favoriteDevices.contains(device)){
+            favoriteDevices.add(device)
+            favoriteFragment.addDevice(device)
+        }
+        saveListToPreferences("favorites", favoriteDevices)
     }
 
     private fun displayDevices(){
         deviceFragment.addDevices(discoveredDevices)
+        favoriteFragment.addDevices(favoriteDevices)
     }
 
     private fun addNewDevices(list: List<Device>){
@@ -191,7 +194,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 discoveredDevices.add(item)
             }
         }
-        setDiscoveredList("discovered", discoveredDevices)
+        saveListToPreferences("discovered", discoveredDevices)
     }
 
     private fun onMapReady() {

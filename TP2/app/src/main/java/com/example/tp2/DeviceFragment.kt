@@ -75,7 +75,7 @@ class DeviceFragment() : Fragment() {
 
     fun saveFavorite(device: Device){
         val myActivity: MainActivity = this.activity as MainActivity
-        myActivity.saveFavorite(device)
+        myActivity.addFavorite(device)
     }
 
     private fun getDeviceType(type: Int): String {
