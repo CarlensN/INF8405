@@ -1,7 +1,6 @@
 package com.example.tp2
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -37,7 +36,6 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 import com.mapbox.maps.plugin.locationcomponent.location
 import java.lang.reflect.Type
 import kotlin.math.abs
-import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity(), PermissionsListener{
@@ -48,8 +46,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var pointAnnotationManager:PointAnnotationManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
-    private lateinit var deviceAdapter: DeviceAdapter
-    private lateinit var favoriteAdapter: DeviceAdapter
     private lateinit var discoveredDevices: ArrayList<Device>
     private lateinit var favoriteDevices: ArrayList<Device>
     private lateinit var newDevices: ArrayList<Device>
@@ -121,16 +117,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         favoriteFragment = FavoriteFragment()
     }
 
-    @SuppressLint("MissingPermission")
-    private fun onRecyclerViewItemClick(position: Int){
-        //Toast.makeText(this, deviceAdapter.devices[position].name, Toast.LENGTH_SHORT).show()
-        val dialog = Dialog(this)
-        dialog.show()
-    }
-
-
-
-
     private fun handlePermissions(){
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
             onMapReady()
@@ -161,8 +147,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private val receiver = object : BroadcastReceiver(){
         @SuppressLint("MissingPermission")
         override fun onReceive(context: Context, intent: Intent?) {
-            val action : String? = intent?.action
-            when(action){
+            when(intent?.action){
                 BluetoothDevice.ACTION_FOUND ->{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     Log.d("device", "${device?.name} + ${device?.address}")
@@ -202,7 +187,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         for(item in discoveredDevices){
             val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
             if (bitmap != null) {
-                prepareAnnotationMarker(mapView, bitmap, Point.fromLngLat(item.location.second,item.location.first))
+                prepareAnnotationMarker(mapView, bitmap, Point.fromLngLat(item.location.second, item.location.first))
             }
         }
     }
@@ -238,12 +223,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         mapView.location
             .addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
 
-        /*val annotationPlugin = mapView.annotations
-        pointAnnotationManager = annotationPlugin.createPointAnnotationManager()
+
         pointAnnotationManager.addClickListener { clickedAnnotation ->
             Toast.makeText(this, "hallo", Toast.LENGTH_SHORT).show()
             true
-        }*/
+        }
     }
 
     private fun initLocationComponent() {
@@ -280,10 +264,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun convertDrawableToBitmap(id: Int): Bitmap? {
-        val sourceDrawable = AppCompatResources.getDrawable(this,id)
-        if (sourceDrawable == null) {
-            return null
-        }
+        val sourceDrawable = AppCompatResources.getDrawable(this,id) ?: return null
         return if (sourceDrawable is BitmapDrawable) {
             sourceDrawable.bitmap
         } else {
@@ -313,13 +294,14 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
     override fun onPermissionResult(p0: Boolean) {
        if(p0){
-           onMapReady();
+           onMapReady()
        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onDestroy() {
         unregisterReceiver(receiver)
+        pointAnnotationManager.deleteAll()
         super.onDestroy()
     }
 }
