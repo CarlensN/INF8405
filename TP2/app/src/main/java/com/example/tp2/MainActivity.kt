@@ -36,6 +36,7 @@ import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import java.lang.reflect.Type
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
@@ -57,8 +58,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var viewPager: ViewPager
     private lateinit var deviceFragment: DeviceFragment
     private lateinit var favoriteFragment: FavoriteFragment
-    private lateinit var currentPosition: Pair<Double, Double>
-    private var shouldGetPosition: Boolean = true
+    private var currentPosition: Pair<Double, Double> = Pair(0.0,0.0)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -176,11 +176,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
                 BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
                     Toast.makeText(context, "Starting device discovery", Toast.LENGTH_SHORT).show()
-                    shouldGetPosition = true
                 }
 
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED ->{
-                    shouldGetPosition = false
                     addNewDevices(newDevices)
                     newDevices.clear()
                     Toast.makeText(context, "Scanning Done", Toast.LENGTH_SHORT).show()
@@ -201,19 +199,21 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private fun displayDevices(){
         deviceFragment.addDevices(discoveredDevices)
         favoriteFragment.addDevices(favoriteDevices)
-    }
-
-    private fun addNewDevices(list: List<Device>){
-        for(item in list){
-            if (!discoveredDevices.contains(item)){
-                discoveredDevices.add(item)
-            }
-        }
         for(item in discoveredDevices){
             val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
             if (bitmap != null) {
-                prepareAnnotationMarker(mapView, bitmap, Point.fromLngLat(item.location.first,item.location.second))
+                prepareAnnotationMarker(mapView, bitmap, Point.fromLngLat(item.location.second,item.location.first))
             }
+        }
+    }
+
+    private fun addNewDevices(list: List<Device>){
+        val knownAddresses = discoveredDevices.map { it.address }
+        for(item in list){
+            if (knownAddresses.contains(item.address)){
+                discoveredDevices.removeAll{it.address == item.address}
+            }
+            discoveredDevices.add(item)
         }
         saveListToPreferences("discovered", discoveredDevices)
     }
@@ -231,11 +231,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
             // Jump to the current indicator position
             mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
-            if (shouldGetPosition){
+            if (abs(it.latitude() - currentPosition.first) >= 0.05 || abs(it.longitude() - currentPosition.second) >= 0.05){
                 currentPosition = Pair(it.latitude(), it.longitude())
-                shouldGetPosition = false
             }
-
         }
         mapView.location
             .addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
@@ -276,6 +274,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             .withPoint(point)
             .withIconImage(iconBitmap)
             .withIconAnchor(IconAnchor.BOTTOM)
+            .withIconSize(0.5)
         pointAnnotationManager = annotationPlugin.createPointAnnotationManager()
         pointAnnotationManager.create(pointAnnotationOptions)
     }
