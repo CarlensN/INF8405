@@ -59,4 +59,10 @@ class FavoriteFragment : Fragment() {
         adapter.notifyItemInserted(adapter.itemCount)
     }
 
+    fun addDevices(list: List<Device>){
+        adapter.clear()
+        adapter.devices.addAll(list)
+        adapter.notifyDataSetChanged()
+    }
+
 }

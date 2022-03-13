@@ -3,6 +3,7 @@ package com.example.tp2
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.*
@@ -154,7 +155,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     Log.d("device", "${device?.name} + ${device?.address}")
                     if (device != null && device.name != null) {
-                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass, device.type)
+                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type)
                         //deviceFragment.addDevice(formattedDevice)
                         newDevices.add(formattedDevice)
                         //favoriteFragment.addDevice(device)
@@ -173,6 +174,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             }
         }
 
+    }
+
+    fun saveFavorite(device: Device){
+        favoriteDevices.add(device)
+        favoriteFragment.addDevices(favoriteDevices)
     }
 
     private fun displayDevices(){

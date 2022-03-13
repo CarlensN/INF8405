@@ -5,6 +5,6 @@ import android.bluetooth.BluetoothClass
 data class Device(
     var name: String?,
     var address: String?,
-    var deviceClass: BluetoothClass?,
+    var deviceClass: Int?,
     var type: Int?
 )

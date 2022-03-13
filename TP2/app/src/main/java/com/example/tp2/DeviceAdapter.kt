@@ -46,26 +46,6 @@ class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
         holder.tvMacAddress.text = devices[position].address
     }
 
-    private fun getDeviceType(type: Int): String {
-        return when(type){
-            1 -> "Classic"
-            2 -> "Dual Mode"
-            3 -> "Low Energy"
-            4 -> "Unknown"
-            else -> {"N/A"}
-        }
-    }
-
-    private fun getDeviceClass(className: Int): String {
-        return when(className){
-            1 -> "Classic BR/EDR"
-            2 -> "Dual Mode - BR/EDR/LE"
-            3 -> "Low Energy - LE-only"
-            4 -> "Unknown"
-            else -> {"N/A"}
-        }
-    }
-
     override fun getItemCount(): Int {
         return devices.size
     }
