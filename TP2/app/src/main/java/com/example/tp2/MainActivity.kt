@@ -19,6 +19,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
+import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
@@ -27,6 +28,7 @@ import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import java.lang.reflect.Type
+import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity(), PermissionsListener{
@@ -46,6 +48,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var viewPager: ViewPager
     private lateinit var deviceFragment: DeviceFragment
     private lateinit var favoriteFragment: FavoriteFragment
+    private lateinit var currentPosition: Pair<Double, Double>
+    private var shouldGetPosition: Boolean = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,7 +158,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     Log.d("device", "${device?.name} + ${device?.address}")
                     if (device != null && device.name != null) {
-                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type)
+                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition)
                         //deviceFragment.addDevice(formattedDevice)
                         newDevices.add(formattedDevice)
                         //favoriteFragment.addDevice(device)
@@ -163,9 +167,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
                 BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
                     Toast.makeText(context, "Starting device discovery", Toast.LENGTH_SHORT).show()
+                    shouldGetPosition = true
                 }
 
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED ->{
+                    shouldGetPosition = false
                     addNewDevices(newDevices)
                     newDevices.clear()
                     Toast.makeText(context, "Scanning Done", Toast.LENGTH_SHORT).show()
@@ -210,6 +216,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
             // Jump to the current indicator position
             mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
+            if (shouldGetPosition){
+                currentPosition = Pair(it.latitude(), it.longitude())
+                shouldGetPosition = false
+            }
+
         }
         mapView.location
             .addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)

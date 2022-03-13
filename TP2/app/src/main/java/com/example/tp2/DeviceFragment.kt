@@ -2,6 +2,8 @@ package com.example.tp2
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mapbox.geojson.Point
 
 class DeviceFragment() : Fragment() {
     private lateinit var adapter: DeviceAdapter
@@ -48,7 +51,7 @@ class DeviceFragment() : Fragment() {
 
     @SuppressLint("MissingPermission")
     private fun onRecyclerViewItemClick(position: Int){
-        Toast.makeText(this.context, adapter.devices[position].name, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this.context, adapter.devices[position].location.toString(), Toast.LENGTH_SHORT).show()
         val dialog: Dialog? = this.context?.let { Dialog(it) }
         if (dialog != null) {
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -71,6 +74,17 @@ class DeviceFragment() : Fragment() {
             saveFavorite(adapter.devices[position])
             dialog?.dismiss()
         }
+        navigationButton.setOnClickListener {
+            goToLocation(adapter.devices[position].location)
+            dialog?.dismiss()
+        }
+    }
+
+    fun goToLocation(location: Pair<Double, Double>){
+        val url = "https://maps.google.com/?q=<${location.first}>,<${location.second}>"
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(url)
+        startActivity(intent)
     }
 
     fun saveFavorite(device: Device){
