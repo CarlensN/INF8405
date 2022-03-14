@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var deviceFragment: DeviceFragment
     private lateinit var favoriteFragment: FavoriteFragment
     private var currentPosition: Pair<Double, Double> = Pair(0.0,0.0)
+    private var deviceAnnotationsMap: HashMap<PointAnnotation,Device> = HashMap()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -184,7 +185,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         for(item in discoveredDevices){
             val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
             if (bitmap != null) {
-                prepareAnnotationMarker(mapView, bitmap, Point.fromLngLat(item.location.second, item.location.first))
+                prepareAnnotationMarker(item, mapView, bitmap, Point.fromLngLat(item.location.second, item.location.first))
             }
         }
     }
@@ -235,6 +236,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         pointAnnotationManager.addClickListener(object: OnPointAnnotationClickListener{
             override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
                 Toast.makeText(this@MainActivity, "hallo", Toast.LENGTH_SHORT).show()
+                deviceAnnotationsMap[annotation]?.let { deviceFragment.showModal(it) }
                 return true
             }
         })
@@ -262,13 +264,14 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
     }
 
-    private fun prepareAnnotationMarker(mapView: MapView, iconBitmap: Bitmap, point: Point) {
+    private fun prepareAnnotationMarker(device:Device, mapview: MapView, iconBitmap: Bitmap, point: Point) {
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
             .withPoint(point)
             .withIconImage(iconBitmap)
             .withIconAnchor(IconAnchor.BOTTOM)
             .withIconSize(0.5)
-        pointAnnotationManager.create(pointAnnotationOptions)
+        val pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
+        deviceAnnotationsMap[pointAnnotation] = device
     }
 
     private fun convertDrawableToBitmap(id: Int): Bitmap? {

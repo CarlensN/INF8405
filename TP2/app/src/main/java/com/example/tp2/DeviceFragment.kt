@@ -27,6 +27,7 @@ class DeviceFragment() : Fragment() {
     private lateinit var shareButton: Button
     private lateinit var navigationButton: Button
     private lateinit var favoriteButton: Button
+    private var dialog:Dialog? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,24 +53,21 @@ class DeviceFragment() : Fragment() {
     @SuppressLint("MissingPermission")
     private fun onRecyclerViewItemClick(position: Int){
         Toast.makeText(this.context, adapter.devices[position].location.toString(), Toast.LENGTH_SHORT).show()
-        val dialog: Dialog? = this.context?.let { Dialog(it) }
+        dialog = this.context?.let { Dialog(it) }
         if (dialog != null) {
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setCancelable(true)
-            dialog.setContentView(R.layout.fragment_device_info)
-            deviceName = dialog.findViewById(R.id.tvDeviceName)
-            deviceAddress = dialog.findViewById(R.id.tvMacAddress)
-            deviceClass = dialog.findViewById(R.id.tvDeviceClass)
-            deviceType = dialog.findViewById(R.id.tvDevicetype)
-            shareButton = dialog.findViewById(R.id.shareButton)
-            navigationButton = dialog.findViewById(R.id.navigationButton)
-            favoriteButton = dialog.findViewById(R.id.favoriteButton)
+            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog!!.setCancelable(true)
+            dialog!!.setContentView(R.layout.fragment_device_info)
+            deviceName = dialog!!.findViewById(R.id.tvDeviceName)
+            deviceAddress = dialog!!.findViewById(R.id.tvMacAddress)
+            deviceClass = dialog!!.findViewById(R.id.tvDeviceClass)
+            deviceType = dialog!!.findViewById(R.id.tvDevicetype)
+            shareButton = dialog!!.findViewById(R.id.shareButton)
+            navigationButton = dialog!!.findViewById(R.id.navigationButton)
+            favoriteButton = dialog!!.findViewById(R.id.favoriteButton)
         }
-        deviceName.text = adapter.devices[position].name
-        deviceAddress.text = adapter.devices[position].address
-        deviceClass.text = adapter.devices[position].deviceClass?.let { getDeviceClass(it) }
-        deviceType.text = adapter.devices[position].type?.let { getDeviceType(it) }
-        dialog?.show()
+        val device = adapter.devices[position]
+        showModal(device)
         favoriteButton.setOnClickListener{
             saveFavorite(adapter.devices[position])
             dialog?.dismiss()
@@ -78,6 +76,13 @@ class DeviceFragment() : Fragment() {
             goToLocation(adapter.devices[position].location)
             dialog?.dismiss()
         }
+    }
+    fun showModal(device: Device){
+        deviceName.text = device.name
+        deviceAddress.text = device.address
+        deviceClass.text = device.deviceClass?.let { getDeviceClass(it) }
+        deviceType.text = device.type?.let { getDeviceType(it) }
+        dialog?.show()
     }
 
     fun goToLocation(location: Pair<Double, Double>){
