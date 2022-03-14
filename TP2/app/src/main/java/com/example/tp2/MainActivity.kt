@@ -221,15 +221,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         mapView.location
             .addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
 
-        val annotationPlugin = mapView.annotations
-        pointAnnotationManager = annotationPlugin.createPointAnnotationManager()
-        pointAnnotationManager.addClickListener { clickedAnnotation ->
-            Toast.makeText(this, clickedAnnotation.textColorString, Toast.LENGTH_SHORT).show()
-            true
-        }
-
         val annotationApi = mapView.annotations
-        val pointAnnotationManager = annotationApi.createPointAnnotationManager(mapView)
+        pointAnnotationManager = annotationApi.createPointAnnotationManager(mapView)
         pointAnnotationManager.addClickListener(object: OnPointAnnotationClickListener{
             override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
                 Toast.makeText(this@MainActivity, "hallo", Toast.LENGTH_SHORT).show()
@@ -261,13 +254,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun prepareAnnotationMarker(mapView: MapView, iconBitmap: Bitmap, point: Point) {
-        val annotationPlugin = mapView.annotations
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
             .withPoint(point)
             .withIconImage(iconBitmap)
             .withIconAnchor(IconAnchor.BOTTOM)
             .withIconSize(0.5)
-        pointAnnotationManager = annotationPlugin.createPointAnnotationManager()
         pointAnnotationManager.create(pointAnnotationOptions)
     }
 
