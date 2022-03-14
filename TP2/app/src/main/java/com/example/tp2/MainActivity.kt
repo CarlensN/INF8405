@@ -235,7 +235,14 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         pointAnnotationManager = annotationApi.createPointAnnotationManager(mapView)
         pointAnnotationManager.addClickListener(object: OnPointAnnotationClickListener{
             override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
-                deviceAnnotationsMap[annotation]?.let { deviceFragment.showModal(it) }
+                val device = deviceAnnotationsMap[annotation]
+                if (device != null) {
+                    if (favoriteDevices.contains(device)) {
+                        favoriteFragment.showModal(device)
+                    }else {
+                        deviceFragment.showModal(device)
+                    }
+                }
                 return true
             }
         })

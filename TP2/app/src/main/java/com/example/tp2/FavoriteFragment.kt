@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -28,6 +29,7 @@ class FavoriteFragment : Fragment() {
     private lateinit var shareButton: Button
     private lateinit var navigationButton: Button
     private lateinit var favoriteButton: Button
+    private var dialog:Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +52,19 @@ class FavoriteFragment : Fragment() {
         recyclerView.adapter = adapter
         val myActivity = this.activity as MainActivity
         myActivity.displayFavorites()
+        dialog = this.context?.let { Dialog(it) }
+        if (dialog != null) {
+            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog!!.setCancelable(true)
+            dialog!!.setContentView(R.layout.fragment_device_info)
+            deviceName = dialog!!.findViewById(R.id.tvDeviceName)
+            deviceAddress = dialog!!.findViewById(R.id.tvMacAddress)
+            deviceClass = dialog!!.findViewById(R.id.tvDeviceClass)
+            deviceType = dialog!!.findViewById(R.id.tvDevicetype)
+            shareButton = dialog!!.findViewById(R.id.shareButton)
+            navigationButton = dialog!!.findViewById(R.id.navigationButton)
+            favoriteButton = dialog!!.findViewById(R.id.favoriteButton)
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -60,25 +75,20 @@ class FavoriteFragment : Fragment() {
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setCancelable(true)
             dialog.setContentView(R.layout.fragment_device_info)
-            deviceName = dialog.findViewById(R.id.tvDeviceName)
-            deviceAddress = dialog.findViewById(R.id.tvMacAddress)
-            deviceClass = dialog.findViewById(R.id.tvDeviceClass)
-            deviceType = dialog.findViewById(R.id.tvDevicetype)
-            shareButton = dialog.findViewById(R.id.shareButton)
-            navigationButton = dialog.findViewById(R.id.navigationButton)
-            favoriteButton = dialog.findViewById(R.id.favoriteButton)
-            favoriteButton.visibility = View.GONE
         }
-        deviceName.text = adapter.devices[position].name
-        deviceAddress.text = adapter.devices[position].address
-        deviceClass.text = adapter.devices[position].deviceClass?.let { getDeviceClass(it) }
-        deviceType.text = adapter.devices[position].type?.let { getDeviceType(it) }
-        dialog?.show()
-
+        showModal(adapter.devices[position])
         navigationButton.setOnClickListener {
             goToLocation(adapter.devices[position].location)
             dialog?.dismiss()
         }
+    }
+    fun showModal(device: Device){
+        favoriteButton.visibility = View.GONE
+        deviceName.text = device.name
+        deviceAddress.text = device.address
+        deviceClass.text = device.deviceClass?.let { getDeviceClass(it) }
+        deviceType.text = device.type?.let { getDeviceType(it) }
+        dialog?.show()
     }
 
     fun goToLocation(location: Pair<Double, Double>){
