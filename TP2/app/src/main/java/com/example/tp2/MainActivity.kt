@@ -29,9 +29,7 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
-import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import java.lang.reflect.Type
@@ -223,11 +221,21 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         mapView.location
             .addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
 
-
+        val annotationPlugin = mapView.annotations
+        pointAnnotationManager = annotationPlugin.createPointAnnotationManager()
         pointAnnotationManager.addClickListener { clickedAnnotation ->
-            Toast.makeText(this, "hallo", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, clickedAnnotation.textColorString, Toast.LENGTH_SHORT).show()
             true
         }
+
+        val annotationApi = mapView.annotations
+        val pointAnnotationManager = annotationApi.createPointAnnotationManager(mapView)
+        pointAnnotationManager.addClickListener(object: OnPointAnnotationClickListener{
+            override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
+                Toast.makeText(this@MainActivity, "hallo", Toast.LENGTH_SHORT).show()
+                return true
+            }
+        })
     }
 
     private fun initLocationComponent() {
