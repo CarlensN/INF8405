@@ -195,7 +195,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         for(item in favoriteDevices){
             val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
             if (bitmap != null) {
-                prepareAnnotationMarker(mapView, bitmap, Point.fromLngLat(item.location.second, item.location.first))
+                prepareAnnotationMarker(item,mapView, bitmap, Point.fromLngLat(item.location.second, item.location.first))
             }
         }
     }
@@ -235,7 +235,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         pointAnnotationManager = annotationApi.createPointAnnotationManager(mapView)
         pointAnnotationManager.addClickListener(object: OnPointAnnotationClickListener{
             override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
-                Toast.makeText(this@MainActivity, "hallo", Toast.LENGTH_SHORT).show()
                 deviceAnnotationsMap[annotation]?.let { deviceFragment.showModal(it) }
                 return true
             }

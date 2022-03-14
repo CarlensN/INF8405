@@ -48,11 +48,6 @@ class DeviceFragment() : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         adapter = DeviceAdapter{ position ->  onRecyclerViewItemClick(position)}
         recyclerView.adapter = adapter
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun onRecyclerViewItemClick(position: Int){
-        Toast.makeText(this.context, adapter.devices[position].location.toString(), Toast.LENGTH_SHORT).show()
         dialog = this.context?.let { Dialog(it) }
         if (dialog != null) {
             dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -66,6 +61,12 @@ class DeviceFragment() : Fragment() {
             navigationButton = dialog!!.findViewById(R.id.navigationButton)
             favoriteButton = dialog!!.findViewById(R.id.favoriteButton)
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun onRecyclerViewItemClick(position: Int){
+        Toast.makeText(this.context, adapter.devices[position].location.toString(), Toast.LENGTH_SHORT).show()
+
         val device = adapter.devices[position]
         showModal(device)
         favoriteButton.setOnClickListener{
