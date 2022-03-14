@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
         map = mapView.getMapboxMap()
         setSharedPreferences()
-        discoveredDevices = getListFromPreferences("discovered")
+        discoveredDevices = ArrayList()
         favoriteDevices = getListFromPreferences("favorites")
         newDevices = ArrayList()
         setBluetoothAdapter()
@@ -88,7 +88,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     operator fun set(key: String?, value: String?) {
         editor.putString(key, value)
         editor.commit()
-        displayDevices()
     }
 
     private fun getListFromPreferences(key: String): ArrayList<Device> {
@@ -190,6 +189,16 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
     }
 
+     fun displayFavorites(){
+        favoriteFragment.addDevices(favoriteDevices)
+        for(item in favoriteDevices){
+            val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
+            if (bitmap != null) {
+                prepareAnnotationMarker(mapView, bitmap, Point.fromLngLat(item.location.second, item.location.first))
+            }
+        }
+    }
+
     private fun addNewDevices(list: List<Device>){
         val knownAddresses = discoveredDevices.map { it.address }
         for(item in list){
@@ -198,7 +207,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             }
             discoveredDevices.add(item)
         }
-        saveListToPreferences("discovered", discoveredDevices)
+        displayDevices()
     }
 
     private fun onMapReady() {
