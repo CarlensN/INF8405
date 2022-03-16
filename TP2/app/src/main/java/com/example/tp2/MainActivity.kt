@@ -152,7 +152,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                     if (device != null && device.name != null) {
                         val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition)
                         //deviceFragment.addDevice(formattedDevice)
-                        newDevices.add(formattedDevice)
+                        deviceFragment.addDevice(formattedDevice)
+                        prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
                         //favoriteFragment.addDevice(device)
                     }
                 }
@@ -165,6 +166,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                     addNewDevices(newDevices)
                     newDevices.clear()
                     Toast.makeText(context, "Scanning Done", Toast.LENGTH_SHORT).show()
+                    bluetoothAdapter.startDiscovery()
                 }
             }
         }
@@ -179,24 +181,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         saveListToPreferences("favorites", favoriteDevices)
     }
 
-    private fun displayDevices(){
-        deviceFragment.addDevices(discoveredDevices)
-        favoriteFragment.addDevices(favoriteDevices)
-        for(item in discoveredDevices){
-            val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
-            if (bitmap != null) {
-                prepareAnnotationMarker(item, mapView, bitmap, Point.fromLngLat(item.location.second, item.location.first))
-            }
-        }
-    }
-
      fun displayFavorites(){
         favoriteFragment.addDevices(favoriteDevices)
         for(item in favoriteDevices){
-            val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
-            if (bitmap != null) {
-                prepareAnnotationMarker(item,mapView, bitmap, Point.fromLngLat(item.location.second, item.location.first))
-            }
+            prepareAnnotationMarker(item,Point.fromLngLat(item.location.second, item.location.first))
         }
     }
 
@@ -208,7 +196,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             }
             discoveredDevices.add(item)
         }
-        displayDevices()
+        deviceFragment.addDevices(discoveredDevices)
+        for(item in discoveredDevices){
+            val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
+            if (bitmap != null) {
+                prepareAnnotationMarker(item, Point.fromLngLat(item.location.second, item.location.first))
+            }
+        }
     }
 
     private fun onMapReady() {
@@ -270,10 +264,29 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
     }
 
-    private fun prepareAnnotationMarker(device:Device, mapview: MapView, iconBitmap: Bitmap, point: Point) {
+    private fun prepareAnnotationMarker(device:Device, point: Point) {
+        val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
+        if(discoveredDevices.contains(device)){
+            for ((key, value) in deviceAnnotationsMap)
+            {
+                if (value == device) {
+                    key.point = Point.fromLngLat(point.longitude(), point.latitude());
+                }
+            }
+            return
+        }
+        else if(favoriteDevices.contains(device)){
+            for ((key, value) in deviceAnnotationsMap)
+            {
+                if (value == device) {
+                    key.point = Point.fromLngLat(point.longitude(), point.latitude());
+                }
+            }
+            return
+        }
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
             .withPoint(point)
-            .withIconImage(iconBitmap)
+            .withIconImage(bitmap!!)
             .withIconAnchor(IconAnchor.BOTTOM)
             .withIconSize(0.5)
         val pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
