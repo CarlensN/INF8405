@@ -51,7 +51,6 @@ class FavoriteFragment : Fragment() {
         adapter = DeviceAdapter{ position ->  onRecyclerViewItemClick(position)}
         recyclerView.adapter = adapter
         val myActivity = this.activity as MainActivity
-        myActivity.displayFavorites()
         dialog = this.context?.let { Dialog(it) }
         if (dialog != null) {
             dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)

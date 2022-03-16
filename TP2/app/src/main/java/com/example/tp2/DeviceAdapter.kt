@@ -60,4 +60,8 @@ class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
         devices.clear()
         notifyDataSetChanged()
     }
+
+    public fun addDevice(device:Device){
+
+    }
 }

@@ -15,8 +15,8 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mapbox.android.core.permissions.PermissionsListener
@@ -44,14 +44,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var pointAnnotationManager:PointAnnotationManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
-    private lateinit var discoveredDevices: ArrayList<Device>
-    private lateinit var favoriteDevices: ArrayList<Device>
-    private lateinit var newDevices: ArrayList<Device>
+    private lateinit var deviceList: ArrayList<Device>
     private lateinit var btnSwapTheme: Button
-    private lateinit var tabLayout: TabLayout
-    private lateinit var viewPager: ViewPager
-    private lateinit var deviceFragment: DeviceFragment
-    private lateinit var favoriteFragment: FavoriteFragment
+    private lateinit var adapter: DeviceAdapter
+    private lateinit var recyclerView: RecyclerView
     private var currentPosition: Pair<Double, Double> = Pair(0.0,0.0)
     private var deviceAnnotationsMap: HashMap<PointAnnotation,Device> = HashMap()
 
@@ -60,19 +56,33 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
-        tabLayout = findViewById(R.id.tabLayout)
-        viewPager = findViewById(R.id.viewPager)
+        recyclerView = findViewById(R.id.rvDeviceList)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = DeviceAdapter{ position ->  onRecyclerViewItemClick(position)}
+        recyclerView.adapter = adapter
         mapView = findViewById<View>(R.id.mapView) as MapView
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
         map = mapView.getMapboxMap()
         setSharedPreferences()
-        discoveredDevices = ArrayList()
-        favoriteDevices = getListFromPreferences("favorites")
-        newDevices = ArrayList()
+        deviceList = getListFromPreferences("deviceList")
         setBluetoothAdapter()
-        setUpFragments()
-        setUpTabs()
         handlePermissions()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun onRecyclerViewItemClick(position: Int){
+        Toast.makeText(this, "salut", Toast.LENGTH_SHORT).show()
+
+        /*val device = adapter.devices[position]
+        showModal(device)
+        favoriteButton.setOnClickListener{
+            saveFavorite(adapter.devices[position])
+            dialog?.dismiss()
+        }
+        navigationButton.setOnClickListener {
+            goToLocation(adapter.devices[position].location)
+            dialog?.dismiss()
+        }*/
     }
 
     private fun setSharedPreferences(){
@@ -102,18 +112,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         return arrayItems
     }
 
-    private fun setUpTabs(){
-        val adapter = ViewPagerAdapter(supportFragmentManager)
-        adapter.addFragment(deviceFragment, "Devices")
-        adapter.addFragment(favoriteFragment, "Favorites")
-        viewPager.adapter = adapter
-        tabLayout.setupWithViewPager(viewPager)
-    }
-
-    private fun setUpFragments(){
-        deviceFragment = DeviceFragment()
-        favoriteFragment = FavoriteFragment()
-    }
 
     private fun handlePermissions(){
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
@@ -152,9 +150,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                     if (device != null && device.name != null) {
                         val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition)
                         //deviceFragment.addDevice(formattedDevice)
-                        deviceFragment.addDevice(formattedDevice)
-                        prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
-                        //favoriteFragment.addDevice(device)
+                        if (!deviceList.contains(formattedDevice)){
+                            addDevice(formattedDevice)
+                            prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
+                        }
                     }
                 }
 
@@ -163,8 +162,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 }
 
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED ->{
-                    addNewDevices(newDevices)
-                    newDevices.clear()
                     Toast.makeText(context, "Scanning Done", Toast.LENGTH_SHORT).show()
                     bluetoothAdapter.startDiscovery()
                 }
@@ -173,37 +170,12 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
     }
 
-    fun addFavorite(device: Device){
-        if (!favoriteDevices.contains(device)){
-            favoriteDevices.add(device)
-            favoriteFragment.addDevice(device)
-        }
-        saveListToPreferences("favorites", favoriteDevices)
+    private fun addDevice(device: Device){
+        deviceList.add(device)
+        adapter.devices.add(device)
+        adapter.notifyDataSetChanged()
     }
 
-     fun displayFavorites(){
-        favoriteFragment.addDevices(favoriteDevices)
-        for(item in favoriteDevices){
-            prepareAnnotationMarker(item,Point.fromLngLat(item.location.second, item.location.first))
-        }
-    }
-
-    private fun addNewDevices(list: List<Device>){
-        val knownAddresses = discoveredDevices.map { it.address }
-        for(item in list){
-            if (knownAddresses.contains(item.address)){
-                discoveredDevices.removeAll{it.address == item.address}
-            }
-            discoveredDevices.add(item)
-        }
-        deviceFragment.addDevices(discoveredDevices)
-        for(item in discoveredDevices){
-            val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
-            if (bitmap != null) {
-                prepareAnnotationMarker(item, Point.fromLngLat(item.location.second, item.location.first))
-            }
-        }
-    }
 
     private fun onMapReady() {
        map.setCamera(
@@ -231,11 +203,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
                 val device = deviceAnnotationsMap[annotation]
                 if (device != null) {
-                    if (favoriteDevices.contains(device)) {
+                    /*if (favoriteDevices.contains(device)) {
                         favoriteFragment.showModal(device)
                     }else {
                         deviceFragment.showModal(device)
-                    }
+                    }*/
                 }
                 return true
             }
@@ -266,24 +238,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
     private fun prepareAnnotationMarker(device:Device, point: Point) {
         val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
-        if(discoveredDevices.contains(device)){
-            for ((key, value) in deviceAnnotationsMap)
-            {
-                if (value == device) {
-                    key.point = Point.fromLngLat(point.longitude(), point.latitude());
-                }
-            }
-            return
-        }
-        else if(favoriteDevices.contains(device)){
-            for ((key, value) in deviceAnnotationsMap)
-            {
-                if (value == device) {
-                    key.point = Point.fromLngLat(point.longitude(), point.latitude());
-                }
-            }
-            return
-        }
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
             .withPoint(point)
             .withIconImage(bitmap!!)

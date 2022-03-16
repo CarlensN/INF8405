@@ -70,8 +70,8 @@ class DeviceFragment() : Fragment() {
         val device = adapter.devices[position]
         showModal(device)
         favoriteButton.setOnClickListener{
-            saveFavorite(adapter.devices[position])
-            dialog?.dismiss()
+            /*saveFavorite(adapter.devices[position])
+            dialog?.dismiss()*/
         }
         navigationButton.setOnClickListener {
             goToLocation(adapter.devices[position].location)
@@ -91,11 +91,6 @@ class DeviceFragment() : Fragment() {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(url)
         startActivity(intent)
-    }
-
-    fun saveFavorite(device: Device){
-        val myActivity: MainActivity = this.activity as MainActivity
-        myActivity.addFavorite(device)
     }
 
     private fun getDeviceType(type: Int): String {
