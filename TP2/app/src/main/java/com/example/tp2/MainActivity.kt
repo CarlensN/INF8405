@@ -1,6 +1,7 @@
 package com.example.tp2
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -8,13 +9,17 @@ import android.content.*
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.Window
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -51,6 +56,16 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private var currentPosition: Pair<Double, Double> = Pair(0.0,0.0)
     private var deviceAnnotationsMap: HashMap<PointAnnotation,Device> = HashMap()
 
+    //Dialog attributes
+    private lateinit var deviceName: TextView
+    private lateinit var deviceAddress: TextView
+    private lateinit var deviceClass: TextView
+    private lateinit var deviceType: TextView
+    private lateinit var shareButton: Button
+    private lateinit var navigationButton: Button
+    private lateinit var favoriteButton: Button
+    private var dialog: Dialog? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,25 +79,100 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
         map = mapView.getMapboxMap()
         setSharedPreferences()
-        deviceList = getListFromPreferences("deviceList")
+        initFavorites()
+        initDialog()
         setBluetoothAdapter()
         handlePermissions()
+    }
+
+    private fun initDialog() {
+        dialog = Dialog(this)
+        if (dialog != null) {
+            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog!!.setCancelable(true)
+            dialog!!.setContentView(R.layout.fragment_device_info)
+            deviceName = dialog!!.findViewById(R.id.tvDeviceName)
+            deviceAddress = dialog!!.findViewById(R.id.tvMacAddress)
+            deviceClass = dialog!!.findViewById(R.id.tvDeviceClass)
+            deviceType = dialog!!.findViewById(R.id.tvDevicetype)
+            shareButton = dialog!!.findViewById(R.id.shareButton)
+            navigationButton = dialog!!.findViewById(R.id.navigationButton)
+            favoriteButton = dialog!!.findViewById(R.id.favoriteButton)
+        }
     }
 
     @SuppressLint("MissingPermission")
     private fun onRecyclerViewItemClick(position: Int){
         Toast.makeText(this, "salut", Toast.LENGTH_SHORT).show()
-
-        /*val device = adapter.devices[position]
+        val device = adapter.devices[position]
         showModal(device)
         favoriteButton.setOnClickListener{
-            saveFavorite(adapter.devices[position])
+            addFavorite(adapter.devices[position])
             dialog?.dismiss()
         }
         navigationButton.setOnClickListener {
             goToLocation(adapter.devices[position].location)
             dialog?.dismiss()
-        }*/
+        }
+    }
+
+    private fun addFavorite(device: Device) {
+        device.favorite = true
+        val favoriteList = ArrayList<Device>()
+        for(item in deviceList){
+            if (item.favorite){
+                favoriteList.add(item)
+            }
+        }
+        saveListToPreferences("favorites", favoriteList)
+    }
+
+    private fun initFavorites(){
+        deviceList = getListFromPreferences("favorites")
+        adapter.setDeviceList(deviceList)
+    }
+
+    private fun showModal(device: Device){
+        deviceName.text = device.name
+        deviceAddress.text = device.address
+        deviceClass.text = device.deviceClass?.let { getDeviceClass(it) }
+        deviceType.text = device.type?.let { getDeviceType(it) }
+        if (device.favorite){
+            favoriteButton.visibility = View.GONE
+        }
+        else{
+            favoriteButton.visibility = View.VISIBLE
+        }
+        dialog?.show()
+    }
+
+    private fun goToLocation(location: Pair<Double, Double>){
+        val url = "https://maps.google.com/?q=<${location.first}>,<${location.second}>"
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(url)
+        startActivity(intent)
+    }
+
+    private fun getDeviceType(type: Int): String {
+        return when(type){
+            1 -> "Classic"
+            2 -> "Dual Mode"
+            3 -> "Low Energy"
+            else -> {"Unknown"}
+        }
+    }
+
+    private fun getDeviceClass(className: Int): String {
+        return when(className){
+            1024 -> "AUDIO_VIDEO"
+            256 -> "COMPUTER"
+            2304 -> "HEALTH"
+            512 -> "PHONE"
+            1792 -> "WEARABLE"
+            1280 -> "PERIPHERAL"
+            768 -> "NETWORKING"
+            else -> {"UNCATEGORIZED"}
+        }
     }
 
     private fun setSharedPreferences(){
@@ -148,7 +238,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     Log.d("device", "${device?.name} + ${device?.address}")
                     if (device != null && device.name != null) {
-                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition)
+                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition, false)
                         //deviceFragment.addDevice(formattedDevice)
                         if (!deviceList.contains(formattedDevice)){
                             addDevice(formattedDevice)
@@ -172,7 +262,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
     private fun addDevice(device: Device){
         deviceList.add(device)
-        adapter.devices.add(device)
         adapter.notifyDataSetChanged()
     }
 
