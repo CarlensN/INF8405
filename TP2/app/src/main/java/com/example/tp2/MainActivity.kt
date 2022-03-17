@@ -11,13 +11,12 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -66,6 +65,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var favoriteButton: Button
     private var dialog: Dialog? = null
 
+    //const variables
+    private val FAVORITES: String = "favorites"
+    private val ISDARKMODEON: String = "isDarkModeOn"
+    private val SAVE: String = "save"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,11 +81,28 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         recyclerView.adapter = adapter
         mapView = findViewById<View>(R.id.mapView) as MapView
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
+        btnSwapTheme.setOnClickListener {
+            swapTheme()
+        }
         map = mapView.getMapboxMap()
         setSharedPreferences()
         initDialog()
         setBluetoothAdapter()
         handlePermissions()
+    }
+
+    private fun swapTheme() {
+        val isDarkModeOn = sharedPreferences.getBoolean(ISDARKMODEON, false)
+        if (isDarkModeOn){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) //light mode
+            editor.putBoolean(ISDARKMODEON, false)
+            editor.commit()
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) //dark mode
+            editor.putBoolean(ISDARKMODEON, true)
+            editor.commit()
+        }
     }
 
     private fun initDialog() {
@@ -100,9 +121,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
     }
 
-    @SuppressLint("MissingPermission")
     private fun onRecyclerViewItemClick(position: Int){
-        Toast.makeText(this, "salut", Toast.LENGTH_SHORT).show()
         val device = adapter.devices[position]
         showModal(device)
     }
@@ -125,11 +144,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 adapter.notifyItemChanged(deviceList.indexOf(item))
             }
         }
-        saveListToPreferences("favorites", favoriteList)
+        saveListToPreferences(favoriteList)
     }
 
     private fun initFavorites(){
-        deviceList = getListFromPreferences("favorites")
+        deviceList = getListFromPreferences()
         adapter.setDeviceList(deviceList)
         for(device in deviceList) {
             prepareAnnotationMarker(device,
@@ -192,24 +211,24 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun setSharedPreferences(){
-        sharedPreferences = getSharedPreferences("save", MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences(SAVE, MODE_PRIVATE)
         editor = sharedPreferences.edit()
     }
 
-    private fun saveListToPreferences(key: String, list: List<Device>){
+    private fun saveListToPreferences(list: List<Device>){
         val gson = Gson()
         val json : String = gson.toJson(list)
-        set(key, json)
+        set(json)
     }
 
-    operator fun set(key: String?, value: String?) {
-        editor.putString(key, value)
+    fun set(value: String?) {
+        editor.putString(FAVORITES, value)
         editor.commit()
     }
 
-    private fun getListFromPreferences(key: String): ArrayList<Device> {
+    private fun getListFromPreferences(): ArrayList<Device> {
         var arrayItems: ArrayList<Device> = ArrayList()
-        val serializedObject = sharedPreferences.getString(key, null)
+        val serializedObject = sharedPreferences.getString(FAVORITES, null)
         if (serializedObject != null) {
             val gson = Gson()
             val type: Type = object : TypeToken<List<Device>?>() {}.type
@@ -252,23 +271,15 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             when(intent?.action){
                 BluetoothDevice.ACTION_FOUND ->{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    Log.d("device", "${device?.name} + ${device?.address}")
                     if (device != null && device.name != null) {
                         val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition, false)
-                        //deviceFragment.addDevice(formattedDevice)
                         if (!deviceList.contains(formattedDevice)){
                             addDevice(formattedDevice)
                             prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
                         }
                     }
                 }
-
-                BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
-                    Toast.makeText(context, "Starting device discovery", Toast.LENGTH_SHORT).show()
-                }
-
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED ->{
-                    Toast.makeText(context, "Scanning Done", Toast.LENGTH_SHORT).show()
                     bluetoothAdapter.startDiscovery()
                 }
             }
@@ -313,21 +324,18 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
         val annotationApi = mapView.annotations
         pointAnnotationManager = annotationApi.createPointAnnotationManager(mapView)
-        pointAnnotationManager.addClickListener(object: OnPointAnnotationClickListener{
-            override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
-                val device = deviceAnnotationsMap[annotation]
-                if (device != null) {
-                    showModal(device)
-                }
-                return true
+        pointAnnotationManager.addClickListener(OnPointAnnotationClickListener { annotation ->
+            val device = deviceAnnotationsMap[annotation]
+            if (device != null) {
+                showModal(device)
             }
+            true
         })
         initFavorites()
     }
 
     private fun initLocationComponent() {
         val locationComponentPlugin = mapView.location
-        Toast.makeText(this,"Welcome",Toast.LENGTH_SHORT).show()
         locationComponentPlugin.updateSettings {
             this.enabled = true
             this.locationPuck = LocationPuck2D(
