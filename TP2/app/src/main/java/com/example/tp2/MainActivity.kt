@@ -105,19 +105,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         Toast.makeText(this, "salut", Toast.LENGTH_SHORT).show()
         val device = adapter.devices[position]
         showModal(device)
-        favoriteButton.setOnClickListener{
-            addFavorite(adapter.devices[position])
-            dialog?.dismiss()
-        }
-        navigationButton.setOnClickListener {
-            goToLocation(adapter.devices[position].location)
-            dialog?.dismiss()
-        }
-        shareButton.setOnClickListener {
-            shareLocation(adapter.devices[position].location)
-        }
     }
-
+    
     private fun shareLocation(location: Pair<Double, Double>){
         val sendIntent = Intent()
         val geoUri = "http://maps.google.com/maps?q=loc:" + location.first + "," + location.second
@@ -158,6 +147,17 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
         else{
             favoriteButton.visibility = View.VISIBLE
+        }
+        favoriteButton.setOnClickListener{
+            addFavorite(device)
+            dialog?.dismiss()
+        }
+        navigationButton.setOnClickListener {
+            goToLocation(device.location)
+            dialog?.dismiss()
+        }
+        shareButton.setOnClickListener {
+            shareLocation(device.location)
         }
         dialog?.show()
     }
@@ -349,13 +349,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
     private fun prepareAnnotationMarker(device:Device, point: Point) {
         if(markerPositions.contains(device.location)){
-            var pair = Pair(device.location.first+1, device.location.second+1)
+            var pair = Pair(device.location.first+0.00001, device.location.second+0.00001)
             while(markerPositions.contains(pair)){
-                pair = Pair(pair.first+1 , pair.second+1)
+                pair = Pair(pair.first+0.00001 , pair.second+0.00001)
             }
             device.location = pair
-            markerPositions.add(pair)
         }
+        markerPositions.add(device.location)
         val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
             .withPoint(Point.fromLngLat(device.location.second, device.location.first))
