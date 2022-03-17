@@ -19,7 +19,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -113,6 +112,18 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             goToLocation(adapter.devices[position].location)
             dialog?.dismiss()
         }
+        shareButton.setOnClickListener {
+            shareLocation(adapter.devices[position].location)
+        }
+    }
+
+    private fun shareLocation(location: Pair<Double, Double>){
+        val sendIntent = Intent()
+        val geoUri = "http://maps.google.com/maps?q=loc:" + location.first + "," + location.second
+        sendIntent.action = Intent.ACTION_SEND
+        sendIntent.putExtra(Intent.EXTRA_TEXT, geoUri)
+        sendIntent.type = "text/plain"
+        startActivity(sendIntent)
     }
 
     private fun addFavorite(device: Device) {
@@ -151,9 +162,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun goToLocation(location: Pair<Double, Double>){
-        val url = "https://maps.google.com/?q=<${location.first}>,<${location.second}>"
+        val geoUri = "http://maps.google.com/maps?q=loc:" + location.first + "," + location.second
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
+        intent.data = Uri.parse(geoUri)
         startActivity(intent)
     }
 
