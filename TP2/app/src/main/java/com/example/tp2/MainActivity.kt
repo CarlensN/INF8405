@@ -79,7 +79,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
         map = mapView.getMapboxMap()
         setSharedPreferences()
-        initFavorites()
         initDialog()
         setBluetoothAdapter()
         handlePermissions()
@@ -311,6 +310,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 return true
             }
         })
+        initFavorites()
     }
 
     private fun initLocationComponent() {
