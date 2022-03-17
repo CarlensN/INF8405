@@ -327,7 +327,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
     private fun initLocationComponent() {
         val locationComponentPlugin = mapView.location
-
+        Toast.makeText(this,"Welcome",Toast.LENGTH_SHORT).show()
         locationComponentPlugin.updateSettings {
             this.enabled = true
             this.locationPuck = LocationPuck2D(

@@ -22,8 +22,13 @@
         android:theme="@style/Theme.TP2">
         <activity
             android:name=".MainActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"/>
+        <activity
+            android:name=".SplashScreenActivity"
             android:exported="true"
-            android:screenOrientation="landscape">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:screenOrientation="sensorLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -17,10 +17,12 @@
         <entry key="..\:/Users/cnere/Documents/Polytechnique/Session Hiver 2022/INF8405 - Informatique Mobile/Travaux Pratiques/INF8405/TP2/app/src/main/res/layout/fragment_device.xml" value="0.2975630611372381" />
         <entry key="..\:/Users/cnere/Documents/Polytechnique/Session Hiver 2022/INF8405 - Informatique Mobile/Travaux Pratiques/INF8405/TP2/app/src/main/res/layout/fragment_device_info.xml" value="0.33" />
         <entry key="..\:/Users/cnere/Documents/Polytechnique/Session Hiver 2022/INF8405 - Informatique Mobile/Travaux Pratiques/INF8405/TP2/app/src/main/res/layout/fragment_favorite.xml" value="0.15220179563916203" />
+        <entry key="..\:/Users/jamal/OneDrive/Bureau/INF8405/TP2/TP2/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/jamal/OneDrive/Bureau/INF8405/TP2/TP2/app/src/main/res/layout/activity_splash_screen.xml" value="0.264" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
