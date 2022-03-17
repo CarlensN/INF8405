@@ -131,6 +131,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private fun initFavorites(){
         deviceList = getListFromPreferences("favorites")
         adapter.setDeviceList(deviceList)
+        for(device in deviceList) {
+            prepareAnnotationMarker(device,
+                Point.fromLngLat(device.location.second, device.location.first))
+        }
     }
 
     private fun showModal(device: Device){
@@ -302,11 +306,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
                 val device = deviceAnnotationsMap[annotation]
                 if (device != null) {
-                    /*if (favoriteDevices.contains(device)) {
-                        favoriteFragment.showModal(device)
-                    }else {
-                        deviceFragment.showModal(device)
-                    }*/
+                    showModal(device)
                 }
                 return true
             }
