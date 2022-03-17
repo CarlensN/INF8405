@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var recyclerView: RecyclerView
     private var currentPosition: Pair<Double, Double> = Pair(0.0,0.0)
     private var deviceAnnotationsMap: HashMap<PointAnnotation,Device> = HashMap()
+    private var markerPositions = HashSet<Pair<Double,Double>>()
 
     //Dialog attributes
     private lateinit var deviceName: TextView
@@ -347,9 +348,17 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun prepareAnnotationMarker(device:Device, point: Point) {
+        if(markerPositions.contains(device.location)){
+            var pair = Pair(device.location.first+1, device.location.second+1)
+            while(markerPositions.contains(pair)){
+                pair = Pair(pair.first+1 , pair.second+1)
+            }
+            device.location = pair
+            markerPositions.add(pair)
+        }
         val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-            .withPoint(point)
+            .withPoint(Point.fromLngLat(device.location.second, device.location.first))
             .withIconImage(bitmap!!)
             .withIconAnchor(IconAnchor.BOTTOM)
             .withIconSize(0.5)
