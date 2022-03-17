@@ -23,6 +23,7 @@ class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
     inner class DeviceViewHolder(itemView: View, private val onItemClicked: (position: Int) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
         val tvDeviceName : TextView = itemView.findViewById(R.id.tvDeviceName)
         val tvMacAddress : TextView = itemView.findViewById(R.id.tvMacAddress)
+        val icFavorite : ImageView = itemView.findViewById(R.id.icFavorite)
 
         init {
             itemView.setOnClickListener(this)
@@ -44,6 +45,12 @@ class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
     override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
         holder.tvDeviceName.text = devices[position].name
         holder.tvMacAddress.text = devices[position].address
+        if (devices[position].favorite){
+            holder.icFavorite.visibility = View.VISIBLE
+        }
+        else{
+            holder.icFavorite.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int {
