@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         for(item in deviceList){
             if (item.favorite){
                 favoriteList.add(item)
+                adapter.notifyItemChanged(deviceList.indexOf(item))
             }
         }
         saveListToPreferences("favorites", favoriteList)
@@ -261,6 +262,15 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun addDevice(device: Device){
+        val addresses = deviceList.map { it.address }
+        if (addresses.contains(device.address)){
+            val oldDevice = deviceList.find { it.address == device.address }
+            if (oldDevice?.location != device.location){
+                oldDevice?.location = device.location
+                return
+            }
+            return
+        }
         deviceList.add(device)
         adapter.notifyDataSetChanged()
     }
