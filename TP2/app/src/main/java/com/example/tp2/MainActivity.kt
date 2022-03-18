@@ -29,6 +29,7 @@ import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
+import com.mapbox.maps.extension.style.expressions.dsl.generated.format
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
@@ -37,6 +38,7 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 import com.mapbox.maps.plugin.locationcomponent.location
 import java.lang.reflect.Type
 import kotlin.math.abs
+import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity(), PermissionsListener{
@@ -142,6 +144,16 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             if (item.favorite){
                 favoriteList.add(item)
                 adapter.notifyItemChanged(deviceList.indexOf(item))
+            }
+        }
+        for ((key, value) in deviceAnnotationsMap)
+        {
+            if ( value.address == device.address ) {
+                pointAnnotationManager.delete(key)
+                deviceAnnotationsMap.remove(key)
+                markerPositions.remove(device.location)
+                prepareAnnotationMarker(device, Point.fromLngLat(currentPosition.second, currentPosition.first))
+                break
             }
         }
         saveListToPreferences(favoriteList)
@@ -273,10 +285,25 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     if (device != null && device.name != null) {
                         val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition, false)
-                        if (!deviceList.contains(formattedDevice)){
-                            addDevice(formattedDevice)
-                            prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
+                        for(device in deviceList){
+                            if(device.address == formattedDevice.address){
+                                formattedDevice.favorite = device.favorite
+                                for ((key, value) in deviceAnnotationsMap)
+                                {
+                                    if ( value.address == formattedDevice.address ) {
+                                        pointAnnotationManager.delete(key)
+                                        deviceAnnotationsMap.remove(key)
+                                        markerPositions.remove(device.location)
+                                        prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
+                                        return
+                                    }
+                                }
+                                return
+                            }
                         }
+                        addDevice(formattedDevice)
+                        prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
+
                     }
                 }
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED ->{
@@ -308,9 +335,17 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 .zoom(18.0)
                 .build()
        )
-        mapView.getMapboxMap().loadStyleUri(
-            Style.MAPBOX_STREETS
-        )
+        val isDarkModeOn = sharedPreferences.getBoolean(ISDARKMODEON, false)
+        if (isDarkModeOn){
+            mapView.getMapboxMap().loadStyleUri(
+                Style.DARK
+            )
+        }
+        else{
+            mapView.getMapboxMap().loadStyleUri(
+                Style.MAPBOX_STREETS
+            )
+        }
         initLocationComponent()
         val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
             // Jump to the current indicator position
@@ -364,7 +399,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             device.location = pair
         }
         markerPositions.add(device.location)
-        val bitmap = convertDrawableToBitmap(R.drawable.red_marker)
+        var drawable = R.drawable.blue_marker
+        if(device.favorite){
+            drawable = R.drawable.red_marker
+        }
+        val bitmap = convertDrawableToBitmap(drawable)
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
             .withPoint(Point.fromLngLat(device.location.second, device.location.first))
             .withIconImage(bitmap!!)
