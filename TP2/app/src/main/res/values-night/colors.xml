@@ -7,31 +7,31 @@
     <color name="green_light">#6cec64</color>
     <color name="green_dark">#008800</color>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FF000000</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="font_main">#4a4a4a</color>
+    <color name="font_main">#FFFFFFFF</color>
     <color name="grey_dark">#4a4a4a</color>
     <color name="grey_light">#767676</color>
-    <color name="grey_pale">#ededed</color>
+    <color name="grey_pale">#4a4a4a</color>
 
-    <!--Light Mode-->
-    <color name="backgroundColor">#53bdff</color>
-    <color name="messageIconBackground">#008dcc</color>
+    <!--Dark Mode-->
+    <color name="backgroundColor">#000000</color>
+    <color name="messageIconBackground">#4a4a4a</color>
     <color name="messageIconColor">#ffffff</color>
     <color name="buttonColor">#0000ff</color>
     <color name="buttonTextColor">#ffffff</color>
-    <color name="cardBackGroundColor">#ffffff</color>
-    <color name="cardTextViewColor">#000000</color>
-    <color name="channelViewColor">#ffffff</color>
-    <color name="iconColor">#000000</color>
-    <color name="textColorHint">#000000</color>
-    <color name="editTextColor">#ffffff</color>
-    <color name="textColor">#000000</color>
-    <color name="lobbyCard">#ededed</color>
-    <color name="drawingSurface">#ffffff</color>
-    <color name="chat_background">#ededed</color>
+    <color name="cardBackGroundColor">#4a4a4a</color>
+    <color name="cardTextViewColor">#ffffff</color>
+    <color name="channelViewColor">#000000</color>
+    <color name="iconColor">#ffffff</color>
+    <color name="textColorHint">#ffffff</color>
+    <color name="editTextColor">#000000</color>
+    <color name="textColor">#ffffff</color>
+    <color name="lobbyCard">#4a4a4a</color>
+    <color name="drawingSurface">#767676</color>
+    <color name="chat_background">#000000</color>
 </resources>
