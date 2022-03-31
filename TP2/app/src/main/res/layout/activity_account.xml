@@ -8,6 +8,8 @@
     tools:context=".AccountActivity">
 
   <com.google.android.material.tabs.TabLayout
+      app:tabTextColor="@color/blue_dark"
+      app:tabIndicatorColor="@color/blue_dark"
       android:id="@+id/tabLayout"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"

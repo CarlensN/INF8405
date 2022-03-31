@@ -19,68 +19,16 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="@color/blue_dark"
             android:textSize="32sp"
-            app:layout_constraintBottom_toTopOf="@+id/firstname_textInputLayout"
+            app:layout_constraintBottom_toTopOf="@+id/username_textInputLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lastname_textInputLayout"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="last_name"
-            android:inputType="textEmailAddress"
-            android:textSize="16sp"
-            app:boxStrokeColor="@color/blue_dark"
-            app:endIconMode="clear_text"
-            app:hintTextColor="@color/blue_dark"
-            app:layout_constraintBottom_toTopOf="@+id/username_textInputLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/firstname_textInputLayout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/lastname_editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:textColor="@color/textColor"
-                android:textCursorDrawable="@null"
-                android:textSize="14sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/firstname_textInputLayout"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="first_name"
-            android:inputType="textEmailAddress"
-            android:textSize="16sp"
-            app:boxStrokeColor="@color/blue_dark"
-            app:endIconMode="clear_text"
-            app:hintTextColor="@color/blue_dark"
-            app:layout_constraintBottom_toTopOf="@+id/lastname_textInputLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/welcomeBack_textView">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/firstname_editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:textColor="@color/textColor"
-                android:textCursorDrawable="@null"
-                android:textSize="14sp" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/username_textInputLayout"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-
             android:ems="10"
             android:hint="username"
             android:inputType="textEmailAddress"
@@ -93,7 +41,7 @@
             app:layout_constraintBottom_toTopOf="@+id/password_textInputLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lastname_textInputLayout">
+            app:layout_constraintTop_toBottomOf="@+id/welcomeBack_textView">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/username_editText"
@@ -126,12 +74,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_textInputLayout"
-
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="password"
-
             android:textSize="16sp"
             app:boxStrokeColor="@color/blue_dark"
             app:endIconMode="clear_text"
