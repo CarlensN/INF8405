@@ -29,7 +29,6 @@ import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.expressions.dsl.generated.format
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
@@ -38,7 +37,6 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 import com.mapbox.maps.plugin.locationcomponent.location
 import java.lang.reflect.Type
 import kotlin.math.abs
-import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity(), PermissionsListener{
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var adapter: DeviceAdapter
     private lateinit var recyclerView: RecyclerView
     private var currentPosition: Pair<Double, Double> = Pair(0.0,0.0)
-    private var deviceAnnotationsMap: HashMap<PointAnnotation,Device> = HashMap()
+    private var deviceAnnotationsMap: HashMap<PointAnnotation, Device> = HashMap()
     private var markerPositions = HashSet<Pair<Double,Double>>()
 
     //Dialog attributes
@@ -390,7 +388,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
     }
 
-    private fun prepareAnnotationMarker(device:Device, point: Point) {
+    private fun prepareAnnotationMarker(device: Device, point: Point) {
         if(markerPositions.contains(device.location)){
             var pair = Pair(device.location.first+0.00001, device.location.second+0.00001)
             while(markerPositions.contains(pair)){

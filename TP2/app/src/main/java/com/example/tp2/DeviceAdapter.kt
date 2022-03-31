@@ -1,19 +1,14 @@
 package com.example.tp2
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothClass
-import android.bluetooth.BluetoothDevice
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
-import android.widget.ListView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.mapbox.maps.extension.style.expressions.dsl.generated.switchCase
 
 class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
     RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
@@ -68,7 +63,7 @@ class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
         notifyDataSetChanged()
     }
 
-    public fun addDevice(device:Device){
+    public fun addDevice(device: Device){
 
     }
 }
