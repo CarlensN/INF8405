@@ -54,7 +54,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/email_textInputLayout"
+            android:id="@+id/btnPicture"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -65,7 +65,7 @@
             app:boxStrokeColor="@color/blue_dark"
             app:endIconMode="clear_text"
             app:hintTextColor="@color/blue_dark"
-            app:layout_constraintBottom_toTopOf="@+id/signUp_button"
+            app:layout_constraintBottom_toTopOf="@+id/btnRegister"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/password_textInputLayout">
@@ -82,7 +82,7 @@
             app:boxStrokeColor="@color/blue_dark"
             app:endIconMode="clear_text"
             app:hintTextColor="@color/blue_dark"
-            app:layout_constraintBottom_toTopOf="@+id/email_textInputLayout"
+            app:layout_constraintBottom_toTopOf="@+id/btnPicture"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/username_textInputLayout">
@@ -99,16 +99,16 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/signUp_button"
+            android:id="@+id/btnRegister"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:enabled="false"
-            android:text="sign_up"
+            android:text="Register"
             app:backgroundTint="@color/blue_dark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email_textInputLayout">
+            app:layout_constraintTop_toBottomOf="@+id/btnPicture">
 
         </Button>
 
