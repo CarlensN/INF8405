@@ -84,7 +84,6 @@
             android:id="@+id/login_button"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:enabled="false"
             android:text="login"
             android:backgroundTint="@color/blue_dark"
             app:layout_constraintBottom_toBottomOf="parent"
