@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.example.tp2.activities.ProfileActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 
@@ -71,7 +72,8 @@ class LoginFragment : Fragment() {
         mAuth?.signInWithEmailAndPassword(email, passwordString)?.addOnCompleteListener {
             if (it.isSuccessful){
                 // redirect to main activity
-                startActivity(Intent(this.context, MainActivity::class.java))
+                startActivity(Intent(this.context, ProfileActivity::class.java))
+                activity?.finish()
             }
             else{
                 Toast.makeText(this.context, "Failed to login, please check your credentials.", Toast.LENGTH_LONG).show()

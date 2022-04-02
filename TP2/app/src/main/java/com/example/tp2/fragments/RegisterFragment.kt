@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.tp2.activities.ProfileActivity
 import com.example.tp2.models.User
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
@@ -101,7 +102,6 @@ class RegisterFragment : Fragment() {
         }
 
         val email = usernameString + emailTemplate
-
         mAuth?.createUserWithEmailAndPassword(email, passwordString)
             ?.addOnCompleteListener { task1 ->
                 if (task1.isSuccessful) {
@@ -113,7 +113,8 @@ class RegisterFragment : Fragment() {
                             .setValue(user).addOnCompleteListener { task2 ->
                                 if(task2.isSuccessful){
                                     Toast.makeText(this.context, "User has been registered successfully!", Toast.LENGTH_LONG).show()
-
+                                    startActivity(Intent(this.context, ProfileActivity::class.java))
+                                    activity?.finish()
                                     //redirect to main activity
                                 }
                                 else{

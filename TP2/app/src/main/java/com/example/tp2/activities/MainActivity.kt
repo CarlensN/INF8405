@@ -15,11 +15,18 @@ import android.view.View
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tp2.activities.ProfileActivity
+import com.example.tp2.models.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.database.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mapbox.android.core.permissions.PermissionsListener
@@ -49,6 +56,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var deviceList: ArrayList<Device>
     private lateinit var btnSwapTheme: Button
+    private lateinit var btnShowProfile: Button
     private lateinit var adapter: DeviceAdapter
     private lateinit var recyclerView: RecyclerView
     private var currentPosition: Pair<Double, Double> = Pair(0.0,0.0)
@@ -70,17 +78,39 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private val ISDARKMODEON: String = "isDarkModeOn"
     private val SAVE: String = "save"
 
+    //firebase
+    private lateinit var firebaseUser: FirebaseUser
+    private lateinit var reference: DatabaseReference
+    private lateinit var userID: String
+    private lateinit var currentUser: User
+
+
+    companion object {
+        var active: Boolean = false
+    }
+
+    override fun onStart() {
+        super.onStart()
+        active = true
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
+        firebaseUser = FirebaseAuth.getInstance().currentUser!!
+        reference = FirebaseDatabase.getInstance().getReference("Users")
         recyclerView = findViewById(R.id.rvDeviceList)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = DeviceAdapter{ position ->  onRecyclerViewItemClick(position)}
         recyclerView.adapter = adapter
         mapView = findViewById<View>(R.id.mapView) as MapView
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
+        btnShowProfile = findViewById(R.id.btnShowProfile)
+        btnShowProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
         btnSwapTheme.setOnClickListener {
             swapTheme()
         }
