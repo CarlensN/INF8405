@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var reference: DatabaseReference
     private lateinit var userID: String
     private lateinit var currentUser: User
+    var databaseService = DatabaseService()
 
 
     companion object {
@@ -94,6 +95,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         active = true
     }
 
+    override fun onResume() {
+        super.onResume()
+        Toast.makeText(baseContext, "on resume called", Toast.LENGTH_LONG).show()
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +107,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         setContentView(R.layout.activity_main)
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         reference = FirebaseDatabase.getInstance().getReference("Users")
+        userID = firebaseUser.uid
         recyclerView = findViewById(R.id.rvDeviceList)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = DeviceAdapter{ position ->  onRecyclerViewItemClick(position)}
@@ -110,6 +117,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         btnShowProfile = findViewById(R.id.btnShowProfile)
         btnShowProfile.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
+            finish()
         }
         btnSwapTheme.setOnClickListener {
             swapTheme()
@@ -174,26 +182,42 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 adapter.notifyItemChanged(deviceList.indexOf(item))
             }
         }
+        val hashMap = HashMap<String, Any>()
+        hashMap.put("devices", favoriteList)
+        databaseService.update(userID, hashMap)
         for ((key, value) in deviceAnnotationsMap)
         {
             if ( value.address == device.address ) {
                 pointAnnotationManager.delete(key)
                 deviceAnnotationsMap.remove(key)
-                markerPositions.remove(device.location)
+                markerPositions.remove(Pair(device.lat, device.lng))
                 prepareAnnotationMarker(device, Point.fromLngLat(currentPosition.second, currentPosition.first))
                 break
             }
         }
-        saveListToPreferences(favoriteList)
+        //saveListToPreferences(favoriteList)
     }
 
     private fun initFavorites(){
-        deviceList = getListFromPreferences()
-        adapter.setDeviceList(deviceList)
-        for(device in deviceList) {
-            prepareAnnotationMarker(device,
-                Point.fromLngLat(device.location.second, device.location.first))
-        }
+        adapter.clear()
+        deviceList = ArrayList()
+        reference.child(userID).addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userProfile = snapshot.getValue(User::class.java)
+
+                if (userProfile != null){
+                    deviceList = userProfile.devices
+                    adapter.setDeviceList(deviceList)
+                    for(device in deviceList) {
+                        prepareAnnotationMarker(device,
+                            Point.fromLngLat(device.lng, device.lat))
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(baseContext, "Something wrong happened!", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     private fun showModal(device: Device){
@@ -212,11 +236,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             dialog?.dismiss()
         }
         navigationButton.setOnClickListener {
-            goToLocation(device.location)
+            goToLocation(Pair(device.lat, device.lng))
             dialog?.dismiss()
         }
         shareButton.setOnClickListener {
-            shareLocation(device.location)
+            shareLocation(Pair(device.lat, device.lng))
         }
         dialog?.show()
     }
@@ -312,7 +336,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 BluetoothDevice.ACTION_FOUND ->{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     if (device != null && device.name != null) {
-                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition, false)
+                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition.first, currentPosition.second, false)
                         for(device in deviceList){
                             if(device.address == formattedDevice.address){
                                 formattedDevice.favorite = device.favorite
@@ -321,7 +345,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                                     if ( value.address == formattedDevice.address ) {
                                         pointAnnotationManager.delete(key)
                                         deviceAnnotationsMap.remove(key)
-                                        markerPositions.remove(device.location)
+                                        markerPositions.remove(Pair(device.lat, device.lng))
                                         prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
                                         return
                                     }
@@ -346,8 +370,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         val addresses = deviceList.map { it.address }
         if (addresses.contains(device.address)){
             val oldDevice = deviceList.find { it.address == device.address }
-            if (oldDevice?.location != device.location){
-                oldDevice?.location = device.location
+            if ( Pair(oldDevice?.lat, oldDevice?.lng) != Pair(device.lat, device.lng)){
+                oldDevice?.lat = device.lat
+                oldDevice?.lng = device.lng
                 return
             }
             return
@@ -419,21 +444,22 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun prepareAnnotationMarker(device: Device, point: Point) {
-        if(markerPositions.contains(device.location)){
-            var pair = Pair(device.location.first+0.00001, device.location.second+0.00001)
+        if(markerPositions.contains(Pair(device.lat, device.lng))){
+            var pair = Pair(device.lat+0.00001, device.lng+0.00001)
             while(markerPositions.contains(pair)){
                 pair = Pair(pair.first+0.00001 , pair.second+0.00001)
             }
-            device.location = pair
+            device.lat = pair.first
+            device.lng = pair.second
         }
-        markerPositions.add(device.location)
+        markerPositions.add(Pair(device.lat, device.lng))
         var drawable = R.drawable.blue_marker
         if(device.favorite){
             drawable = R.drawable.red_marker
         }
         val bitmap = convertDrawableToBitmap(drawable)
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-            .withPoint(Point.fromLngLat(device.location.second, device.location.first))
+            .withPoint(Point.fromLngLat(device.lat, device.lng))
             .withIconImage(bitmap!!)
             .withIconAnchor(IconAnchor.BOTTOM)
             .withIconSize(0.5)
@@ -480,6 +506,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     override fun onDestroy() {
         unregisterReceiver(receiver)
         pointAnnotationManager.deleteAll()
+        adapter.clear()
         super.onDestroy()
     }
 }

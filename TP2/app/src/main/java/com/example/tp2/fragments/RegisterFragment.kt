@@ -19,7 +19,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.tp2.activities.ProfileActivity
 import com.example.tp2.models.User
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import java.io.ByteArrayOutputStream
@@ -102,6 +101,9 @@ class RegisterFragment : Fragment() {
         }
 
         val email = usernameString + emailTemplate
+        val devices = ArrayList<Device>()
+        val placeholder = Device("template", "template", 1, 1, 1.1, 1.1, false)
+        devices.add(placeholder)
         mAuth?.createUserWithEmailAndPassword(email, passwordString)
             ?.addOnCompleteListener { task1 ->
                 if (task1.isSuccessful) {
@@ -161,7 +163,7 @@ class RegisterFragment : Fragment() {
 
     }
 
-    fun encodeBitmapAndSaveToFirebase(bitmap: Bitmap): String {
+    private fun encodeBitmapAndSaveToFirebase(bitmap: Bitmap): String {
         val byteArray = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArray)
         return Base64.encodeToString(byteArray.toByteArray(), Base64.DEFAULT)

@@ -44,7 +44,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         btnMain.setOnClickListener {
-            if (MainActivity.active){
+            if (!MainActivity.active){
                 finish()
             }
             else{

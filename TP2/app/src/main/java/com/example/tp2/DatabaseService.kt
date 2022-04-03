@@ -10,10 +10,14 @@ class DatabaseService {
 
     constructor(){
         val firebaseDatabase: FirebaseDatabase = FirebaseDatabase.getInstance()
-        databaseReference = firebaseDatabase.getReference(User::class.java.simpleName)
+        databaseReference = firebaseDatabase.getReference("Users")
     }
 
     fun add(user: User) : Task<Void>{
         return databaseReference.push().setValue(user)
+    }
+
+    fun update(key: String, hashMap: HashMap<String, Any>) : Task<Void>{
+        return databaseReference.child(key).updateChildren(hashMap)
     }
 }

@@ -1,11 +1,12 @@
 package com.example.tp2.models
 
-import android.net.Uri
+import com.example.tp2.Device
 
 class User {
     lateinit var username: String
     lateinit var email: String
     lateinit var imageEncoded: String
+    var devices: ArrayList<Device> = ArrayList()
 
     constructor(){}
 
