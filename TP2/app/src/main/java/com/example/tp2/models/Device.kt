@@ -1,23 +1,23 @@
 package com.example.tp2
 
+import com.example.tp2.models.CustomPair
+
 class Device{
     lateinit var name: String
     lateinit var address: String
     var deviceClass: Int = 0
     var type: Int = 0
-    var lat: Double = 0.0
-    var lng: Double = 0.0
+    lateinit var location: CustomPair
     var favorite: Boolean = false
 
     constructor(){}
 
-    constructor(name: String, address: String, deviceClass: Int, type: Int, lat: Double, lng: Double, favorite: Boolean){
+    constructor(name: String, address: String, deviceClass: Int, type: Int, location: CustomPair, favorite: Boolean){
         this.name = name
         this.address = address
         this.deviceClass = deviceClass
         this.type = type
-        this.lat = lat
-        this.lng = lng
+        this.location = location
         this.favorite = favorite
     }
 }

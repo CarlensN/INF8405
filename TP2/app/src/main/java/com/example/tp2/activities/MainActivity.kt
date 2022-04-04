@@ -26,10 +26,12 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tp2.fragments.ProfileFragment
+import com.example.tp2.models.CustomPair
 import com.example.tp2.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.database.core.utilities.encoding.CustomClassMapper
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Point
@@ -59,9 +61,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var btnShowProfile: Button
     private lateinit var adapter: DeviceAdapter
     private lateinit var recyclerView: RecyclerView
-    private var currentPosition: Pair<Double, Double> = Pair(0.0,0.0)
+    private var currentPosition: CustomPair = CustomPair(0.0,0.0)
     private var deviceAnnotationsMap: HashMap<PointAnnotation, Device> = HashMap()
-    private var markerPositions = HashSet<Pair<Double,Double>>()
+    private var markerPositions = HashSet<CustomPair>()
 
     //Dialog attributes
     private lateinit var deviceName: TextView
@@ -154,7 +156,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         showModal(device)
     }
     
-    private fun shareLocation(location: Pair<Double, Double>){
+    private fun shareLocation(location: CustomPair){
         val sendIntent = Intent()
         val geoUri = "http://maps.google.com/maps?q=loc:" + location.first + "," + location.second
         sendIntent.action = Intent.ACTION_SEND
@@ -180,7 +182,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             if ( value.address == device.address ) {
                 pointAnnotationManager.delete(key)
                 deviceAnnotationsMap.remove(key)
-                markerPositions.remove(Pair(device.lat, device.lng))
+                markerPositions.remove(device.location)
                 prepareAnnotationMarker(device)
                 break
             }
@@ -224,16 +226,16 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             deviceDialog?.dismiss()
         }
         navigationButton.setOnClickListener {
-            goToLocation(Pair(device.lat, device.lng))
+            goToLocation(device.location)
             deviceDialog?.dismiss()
         }
         shareButton.setOnClickListener {
-            shareLocation(Pair(device.lat, device.lng))
+            shareLocation(device.location)
         }
         deviceDialog?.show()
     }
 
-    private fun goToLocation(location: Pair<Double, Double>){
+    private fun goToLocation(location: CustomPair){
         val geoUri = "http://maps.google.com/maps?q=loc:" + location.first + "," + location.second
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(geoUri)
@@ -302,7 +304,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 BluetoothDevice.ACTION_FOUND ->{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     if (device != null && device.name != null) {
-                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition.first, currentPosition.second, false)
+                        val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition, false)
                         for(item in deviceList){
                             if(item.address == formattedDevice.address){
                                 formattedDevice.favorite = item.favorite
@@ -311,7 +313,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                                     if ( value.address == formattedDevice.address ) {
                                         pointAnnotationManager.delete(key)
                                         deviceAnnotationsMap.remove(key)
-                                        markerPositions.remove(Pair(item.lat, item.lng))
+                                        markerPositions.remove(item.location)
                                         prepareAnnotationMarker(formattedDevice)
                                         return
                                     }
@@ -336,9 +338,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         val addresses = deviceList.map { it.address }
         if (addresses.contains(device.address)){
             val oldDevice = deviceList.find { it.address == device.address }
-            if ( Pair(oldDevice?.lat, oldDevice?.lng) != Pair(device.lat, device.lng)){
-                oldDevice?.lat = device.lat
-                oldDevice?.lng = device.lng
+            if (oldDevice?.location != device.location){
+                oldDevice?.location = device.location
                 return
             }
             return
@@ -359,7 +360,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             // Jump to the current indicator position
             mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
             if (abs(it.latitude() - currentPosition.first) >= 0.05 || abs(it.longitude() - currentPosition.second) >= 0.05){
-                currentPosition = Pair(it.latitude(), it.longitude())
+                currentPosition = CustomPair(it.latitude(), it.longitude())
             }
         }
         mapView.location
@@ -399,22 +400,21 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun prepareAnnotationMarker(device: Device) {
-        if(markerPositions.contains(Pair(device.lat, device.lng))){
-            var pair = Pair(device.lat+0.00001, device.lng+0.00001)
+        if(markerPositions.contains(device.location)){
+            var pair = CustomPair(device.location.first+0.00001, device.location.second+0.00001)
             while(markerPositions.contains(pair)){
-                pair = Pair(pair.first+0.00001 , pair.second+0.00001)
+                pair = CustomPair(pair.first+0.00001 , pair.second+0.00001)
             }
-            device.lat = pair.first
-            device.lng = pair.second
+            device.location = pair
         }
-        markerPositions.add(Pair(device.lat, device.lng))
+        markerPositions.add(device.location)
         var drawable = R.drawable.blue_marker
         if(device.favorite){
             drawable = R.drawable.red_marker
         }
         val bitmap = convertDrawableToBitmap(drawable)
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-            .withPoint(Point.fromLngLat(device.lng, device.lat))
+            .withPoint(Point.fromLngLat(device.location.second, device.location.first))
             .withIconImage(bitmap!!)
             .withIconAnchor(IconAnchor.BOTTOM)
             .withIconSize(0.5)

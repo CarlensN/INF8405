@@ -100,9 +100,6 @@ class RegisterFragment : Fragment() {
         }
 
         val email = usernameString + emailTemplate
-        val devices = ArrayList<Device>()
-        val placeholder = Device("template", "template", 1, 1, 1.1, 1.1, false)
-        devices.add(placeholder)
         mAuth?.createUserWithEmailAndPassword(email, passwordString)
             ?.addOnCompleteListener { task1 ->
                 if (task1.isSuccessful) {
