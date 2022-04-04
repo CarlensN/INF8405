@@ -30,11 +30,6 @@ class ProfileFragment : DialogFragment() {
     private lateinit var tvUsername: TextView
     private lateinit var profilePicture: ImageView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onStart() {
         super.onStart()
         val dialog: Dialog? = dialog
@@ -44,6 +39,7 @@ class ProfileFragment : DialogFragment() {
             dialog.window?.setLayout(width, height)
         }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

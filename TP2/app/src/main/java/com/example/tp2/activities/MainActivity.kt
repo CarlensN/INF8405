@@ -11,6 +11,8 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -113,7 +115,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private fun displayProfileFragment(){
         val dialog = ProfileFragment()
         dialog.isCancelable = true
-        dialog.show(supportFragmentManager, "profile")
+        Handler(Looper.getMainLooper()).postDelayed({ dialog.show(supportFragmentManager, "profile") }, 500)
+        //dialog.show(supportFragmentManager, "profile")
     }
 
     private fun swapTheme() {
