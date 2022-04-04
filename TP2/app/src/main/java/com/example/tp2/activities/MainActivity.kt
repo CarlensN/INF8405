@@ -422,9 +422,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun prepareAnnotationMarker(device: Device) {
-        if(markerPositions.contains(device.location)){
+        if(markerPositions.any { marker -> marker.first == device.location.first && marker.second == device.location.second }){
             var pair = CustomPair(device.location.first+0.00001, device.location.second+0.00001)
-            while(markerPositions.contains(pair)){
+            while(markerPositions.any{marker -> marker.first == pair.first && marker.second == pair.second}){
                 pair = CustomPair(pair.first+0.00001 , pair.second+0.00001)
             }
             device.location = pair
