@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var pointAnnotationManager:PointAnnotationManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
-    private lateinit var deviceList: ArrayList<Device>
+    private var deviceList: ArrayList<Device> = ArrayList()
     private lateinit var btnSwapTheme: Button
     private lateinit var btnShowProfile: Button
     private lateinit var adapter: DeviceAdapter
@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var reference: DatabaseReference
     private lateinit var userID: String
     private var databaseService = DatabaseService()
+    private var currentUser: User = User()
 
 
 
@@ -107,11 +108,28 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         btnSwapTheme.setOnClickListener {
             swapTheme()
         }
+        setCurrentUser()
         map = mapView.getMapboxMap()
         setSharedPreferences()
         initDialog()
         setBluetoothAdapter()
         handlePermissions()
+    }
+
+    private fun setCurrentUser() {
+        reference.child(userID).addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userProfile = snapshot.getValue(User::class.java)
+
+                if (userProfile != null){
+                    currentUser = userProfile
+                    initFavorites()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(baseContext, "Something wrong happened!", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     private fun displayProfileFragment(){
@@ -191,8 +209,12 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun initFavorites(){
-        deviceList = ArrayList()
-        reference.child(userID).addListenerForSingleValueEvent(object: ValueEventListener{
+        deviceList = currentUser.devices
+        adapter.setDeviceList(deviceList)
+        for(device in deviceList) {
+            prepareAnnotationMarker(device)
+        }
+        /*reference.child(userID).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val userProfile = snapshot.getValue(User::class.java)
 
@@ -207,7 +229,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(baseContext, "Something wrong happened!", Toast.LENGTH_LONG).show()
             }
-        })
+        })*/
     }
 
     private fun showModal(device: Device){
@@ -375,7 +397,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             }
             true
         })
-        initFavorites()
+        //initFavorites()
     }
 
     private fun initLocationComponent() {
