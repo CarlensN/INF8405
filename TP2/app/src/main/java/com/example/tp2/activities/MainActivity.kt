@@ -11,17 +11,27 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.example.tp2.fragments.ProfileFragment
+import com.example.tp2.models.CustomPair
+import com.example.tp2.models.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.*
+import com.google.firebase.database.core.utilities.encoding.CustomClassMapper
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Point
@@ -29,16 +39,13 @@ import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.expressions.dsl.generated.format
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
-import java.lang.reflect.Type
 import kotlin.math.abs
-import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity(), PermissionsListener{
@@ -49,13 +56,14 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var pointAnnotationManager:PointAnnotationManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
-    private lateinit var deviceList: ArrayList<Device>
+    private var deviceList: ArrayList<Device> = ArrayList()
     private lateinit var btnSwapTheme: Button
+    private lateinit var btnShowProfile: Button
     private lateinit var adapter: DeviceAdapter
     private lateinit var recyclerView: RecyclerView
-    private var currentPosition: Pair<Double, Double> = Pair(0.0,0.0)
-    private var deviceAnnotationsMap: HashMap<PointAnnotation,Device> = HashMap()
-    private var markerPositions = HashSet<Pair<Double,Double>>()
+    private var currentPosition: CustomPair = CustomPair(0.0,0.0)
+    private var deviceAnnotationsMap: HashMap<PointAnnotation, Device> = HashMap()
+    private var markerPositions = HashSet<CustomPair>()
 
     //Dialog attributes
     private lateinit var deviceName: TextView
@@ -65,32 +73,70 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var shareButton: Button
     private lateinit var navigationButton: Button
     private lateinit var favoriteButton: Button
-    private var dialog: Dialog? = null
+    private var deviceDialog: Dialog? = null
 
     //const variables
-    private val FAVORITES: String = "favorites"
     private val ISDARKMODEON: String = "isDarkModeOn"
     private val SAVE: String = "save"
+
+    //firebase
+    private lateinit var firebaseUser: FirebaseUser
+    private lateinit var reference: DatabaseReference
+    private lateinit var userID: String
+    private var databaseService = DatabaseService()
+    private var currentUser: User = User()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
+        firebaseUser = FirebaseAuth.getInstance().currentUser!!
+        reference = FirebaseDatabase.getInstance().getReference("Users")
+        userID = firebaseUser.uid
         recyclerView = findViewById(R.id.rvDeviceList)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = DeviceAdapter{ position ->  onRecyclerViewItemClick(position)}
         recyclerView.adapter = adapter
         mapView = findViewById<View>(R.id.mapView) as MapView
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
+        btnShowProfile = findViewById(R.id.btnShowProfile)
+        btnShowProfile.setOnClickListener {
+            displayProfileFragment()
+        }
         btnSwapTheme.setOnClickListener {
             swapTheme()
         }
+        setCurrentUser()
         map = mapView.getMapboxMap()
         setSharedPreferences()
         initDialog()
         setBluetoothAdapter()
         handlePermissions()
+    }
+
+    private fun setCurrentUser() {
+        reference.child(userID).addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userProfile = snapshot.getValue(User::class.java)
+
+                if (userProfile != null){
+                    currentUser = userProfile
+                    initFavorites()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(baseContext, "Something wrong happened!", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun displayProfileFragment(){
+        val dialog = ProfileFragment()
+        dialog.isCancelable = true
+        Handler(Looper.getMainLooper()).postDelayed({ dialog.show(supportFragmentManager, "profile") }, 500)
+        //dialog.show(supportFragmentManager, "profile")
     }
 
     private fun swapTheme() {
@@ -108,18 +154,18 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun initDialog() {
-        dialog = Dialog(this)
-        if (dialog != null) {
-            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog!!.setCancelable(true)
-            dialog!!.setContentView(R.layout.fragment_device_info)
-            deviceName = dialog!!.findViewById(R.id.tvDeviceName)
-            deviceAddress = dialog!!.findViewById(R.id.tvMacAddress)
-            deviceClass = dialog!!.findViewById(R.id.tvDeviceClass)
-            deviceType = dialog!!.findViewById(R.id.tvDevicetype)
-            shareButton = dialog!!.findViewById(R.id.shareButton)
-            navigationButton = dialog!!.findViewById(R.id.navigationButton)
-            favoriteButton = dialog!!.findViewById(R.id.favoriteButton)
+        deviceDialog = Dialog(this)
+        if (deviceDialog != null) {
+            deviceDialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            deviceDialog!!.setCancelable(true)
+            deviceDialog!!.setContentView(R.layout.fragment_device_info)
+            deviceName = deviceDialog!!.findViewById(R.id.tvDeviceName)
+            deviceAddress = deviceDialog!!.findViewById(R.id.tvMacAddress)
+            deviceClass = deviceDialog!!.findViewById(R.id.tvDeviceClass)
+            deviceType = deviceDialog!!.findViewById(R.id.tvDevicetype)
+            shareButton = deviceDialog!!.findViewById(R.id.shareButton)
+            navigationButton = deviceDialog!!.findViewById(R.id.navigationButton)
+            favoriteButton = deviceDialog!!.findViewById(R.id.favoriteButton)
         }
     }
 
@@ -128,7 +174,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         showModal(device)
     }
     
-    private fun shareLocation(location: Pair<Double, Double>){
+    private fun shareLocation(location: CustomPair){
         val sendIntent = Intent()
         val geoUri = "http://maps.google.com/maps?q=loc:" + location.first + "," + location.second
         sendIntent.action = Intent.ACTION_SEND
@@ -146,33 +192,51 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 adapter.notifyItemChanged(deviceList.indexOf(item))
             }
         }
+        val hashMap = HashMap<String, Any>()
+        hashMap.put("devices", favoriteList)
+        databaseService.update(userID, hashMap)
         for ((key, value) in deviceAnnotationsMap)
         {
             if ( value.address == device.address ) {
                 pointAnnotationManager.delete(key)
                 deviceAnnotationsMap.remove(key)
                 markerPositions.remove(device.location)
-                prepareAnnotationMarker(device, Point.fromLngLat(currentPosition.second, currentPosition.first))
+                prepareAnnotationMarker(device)
                 break
             }
         }
-        saveListToPreferences(favoriteList)
+        //saveListToPreferences(favoriteList)
     }
 
     private fun initFavorites(){
-        deviceList = getListFromPreferences()
+        deviceList = currentUser.devices
         adapter.setDeviceList(deviceList)
         for(device in deviceList) {
-            prepareAnnotationMarker(device,
-                Point.fromLngLat(device.location.second, device.location.first))
+            prepareAnnotationMarker(device)
         }
+        /*reference.child(userID).addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userProfile = snapshot.getValue(User::class.java)
+
+                if (userProfile != null){
+                    deviceList = userProfile.devices
+                    adapter.setDeviceList(deviceList)
+                    for(device in deviceList) {
+                        prepareAnnotationMarker(device)
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(baseContext, "Something wrong happened!", Toast.LENGTH_LONG).show()
+            }
+        })*/
     }
 
     private fun showModal(device: Device){
         deviceName.text = device.name
         deviceAddress.text = device.address
-        deviceClass.text = device.deviceClass?.let { getDeviceClass(it) }
-        deviceType.text = device.type?.let { getDeviceType(it) }
+        deviceClass.text = getDeviceClass(device.deviceClass)
+        deviceType.text = getDeviceType(device.type)
         if (device.favorite){
             favoriteButton.visibility = View.GONE
         }
@@ -181,19 +245,19 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
         favoriteButton.setOnClickListener{
             addFavorite(device)
-            dialog?.dismiss()
+            deviceDialog?.dismiss()
         }
         navigationButton.setOnClickListener {
             goToLocation(device.location)
-            dialog?.dismiss()
+            deviceDialog?.dismiss()
         }
         shareButton.setOnClickListener {
             shareLocation(device.location)
         }
-        dialog?.show()
+        deviceDialog?.show()
     }
 
-    private fun goToLocation(location: Pair<Double, Double>){
+    private fun goToLocation(location: CustomPair){
         val geoUri = "http://maps.google.com/maps?q=loc:" + location.first + "," + location.second
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(geoUri)
@@ -225,28 +289,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private fun setSharedPreferences(){
         sharedPreferences = getSharedPreferences(SAVE, MODE_PRIVATE)
         editor = sharedPreferences.edit()
-    }
-
-    private fun saveListToPreferences(list: List<Device>){
-        val gson = Gson()
-        val json : String = gson.toJson(list)
-        set(json)
-    }
-
-    fun set(value: String?) {
-        editor.putString(FAVORITES, value)
-        editor.commit()
-    }
-
-    private fun getListFromPreferences(): ArrayList<Device> {
-        var arrayItems: ArrayList<Device> = ArrayList()
-        val serializedObject = sharedPreferences.getString(FAVORITES, null)
-        if (serializedObject != null) {
-            val gson = Gson()
-            val type: Type = object : TypeToken<List<Device>?>() {}.type
-            arrayItems = gson.fromJson(serializedObject, type)
-        }
-        return arrayItems
     }
 
 
@@ -285,16 +327,16 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                     val device : BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     if (device != null && device.name != null) {
                         val formattedDevice = Device(device.name, device.address, device.bluetoothClass.majorDeviceClass, device.type, currentPosition, false)
-                        for(device in deviceList){
-                            if(device.address == formattedDevice.address){
-                                formattedDevice.favorite = device.favorite
+                        for(item in deviceList){
+                            if(item.address == formattedDevice.address){
+                                formattedDevice.favorite = item.favorite
                                 for ((key, value) in deviceAnnotationsMap)
                                 {
                                     if ( value.address == formattedDevice.address ) {
                                         pointAnnotationManager.delete(key)
                                         deviceAnnotationsMap.remove(key)
-                                        markerPositions.remove(device.location)
-                                        prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
+                                        markerPositions.remove(item.location)
+                                        prepareAnnotationMarker(formattedDevice)
                                         return
                                     }
                                 }
@@ -302,7 +344,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                             }
                         }
                         addDevice(formattedDevice)
-                        prepareAnnotationMarker(formattedDevice, Point.fromLngLat(currentPosition.second, currentPosition.first))
+                        prepareAnnotationMarker(formattedDevice)
 
                     }
                 }
@@ -325,7 +367,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             return
         }
         deviceList.add(device)
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemInserted(deviceList.size)
     }
 
 
@@ -335,30 +377,19 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 .zoom(18.0)
                 .build()
        )
-        val isDarkModeOn = sharedPreferences.getBoolean(ISDARKMODEON, false)
-        if (isDarkModeOn){
-            mapView.getMapboxMap().loadStyleUri(
-                Style.DARK
-            )
-        }
-        else{
-            mapView.getMapboxMap().loadStyleUri(
-                Style.MAPBOX_STREETS
-            )
-        }
         initLocationComponent()
         val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
             // Jump to the current indicator position
             mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
             if (abs(it.latitude() - currentPosition.first) >= 0.05 || abs(it.longitude() - currentPosition.second) >= 0.05){
-                currentPosition = Pair(it.latitude(), it.longitude())
+                currentPosition = CustomPair(it.latitude(), it.longitude())
             }
         }
         mapView.location
             .addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
 
         val annotationApi = mapView.annotations
-        pointAnnotationManager = annotationApi.createPointAnnotationManager(mapView)
+        pointAnnotationManager = annotationApi.createPointAnnotationManager()
         pointAnnotationManager.addClickListener(OnPointAnnotationClickListener { annotation ->
             val device = deviceAnnotationsMap[annotation]
             if (device != null) {
@@ -366,7 +397,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             }
             true
         })
-        initFavorites()
+        //initFavorites()
     }
 
     private fun initLocationComponent() {
@@ -390,11 +421,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
     }
 
-    private fun prepareAnnotationMarker(device:Device, point: Point) {
-        if(markerPositions.contains(device.location)){
-            var pair = Pair(device.location.first+0.00001, device.location.second+0.00001)
-            while(markerPositions.contains(pair)){
-                pair = Pair(pair.first+0.00001 , pair.second+0.00001)
+    private fun prepareAnnotationMarker(device: Device) {
+        if(markerPositions.any { marker -> marker.first == device.location.first && marker.second == device.location.second }){
+            var pair = CustomPair(device.location.first+0.00001, device.location.second+0.00001)
+            while(markerPositions.any{marker -> marker.first == pair.first && marker.second == pair.second}){
+                pair = CustomPair(pair.first+0.00001 , pair.second+0.00001)
             }
             device.location = pair
         }
@@ -452,6 +483,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     override fun onDestroy() {
         unregisterReceiver(receiver)
         pointAnnotationManager.deleteAll()
+        adapter.clear()
         super.onDestroy()
     }
 }
