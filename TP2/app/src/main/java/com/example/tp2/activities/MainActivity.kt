@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tp2.fragments.AnalyticsFragment
 import com.example.tp2.fragments.ProfileFragment
 import com.example.tp2.models.CustomPair
 import com.example.tp2.models.User
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private var deviceList: ArrayList<Device> = ArrayList()
     private lateinit var btnSwapTheme: Button
     private lateinit var btnShowProfile: Button
+    private lateinit var btnShowAnalytics: Button
     private lateinit var adapter: DeviceAdapter
     private lateinit var recyclerView: RecyclerView
     private var currentPosition: CustomPair = CustomPair(0.0,0.0)
@@ -102,11 +104,15 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         mapView = findViewById<View>(R.id.mapView) as MapView
         btnSwapTheme = findViewById(R.id.btnSwapTheme)
         btnShowProfile = findViewById(R.id.btnShowProfile)
+        btnShowAnalytics = findViewById(R.id.showStats)
         btnShowProfile.setOnClickListener {
             displayProfileFragment()
         }
         btnSwapTheme.setOnClickListener {
             swapTheme()
+        }
+        btnShowAnalytics.setOnClickListener {
+            displayAnalytics()
         }
         setCurrentUser()
         map = mapView.getMapboxMap()
@@ -136,6 +142,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         val dialog = ProfileFragment()
         dialog.isCancelable = true
         Handler(Looper.getMainLooper()).postDelayed({ dialog.show(supportFragmentManager, "profile") }, 500)
+        //dialog.show(supportFragmentManager, "profile")
+    }
+
+    private fun displayAnalytics(){
+        val dialog = AnalyticsFragment()
+        dialog.isCancelable = true
+        Handler(Looper.getMainLooper()).postDelayed({ dialog.show(supportFragmentManager, "analytics") }, 500)
         //dialog.show(supportFragmentManager, "profile")
     }
 
