@@ -1,14 +1,6 @@
 package com.example.tp2.fragments
 
 import android.app.Dialog
-import android.content.Context
-import android.content.Context.CONNECTIVITY_SERVICE
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
-import android.net.ConnectivityManager
-import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
@@ -18,31 +10,25 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
+import com.example.tp2.MainActivity
 import com.example.tp2.R
+import com.example.tp2.classes.Sensors
 
 
-class AnalyticsFragment : DialogFragment(), SensorEventListener {
-
-    private lateinit var sensorManager: SensorManager
-    private var pressureSensor: Sensor? = null
-    private var magneticFieldSensor: Sensor? = null
-    private lateinit var connectivityManager: ConnectivityManager
+class AnalyticsFragment : DialogFragment(){
     private lateinit var nc: NetworkCapabilities
-
     private lateinit var magneticField: TextView
-    private lateinit var pressure: TextView
+    private lateinit var steps: TextView
     private lateinit var battery: TextView
     private lateinit var uplink: TextView
     private lateinit var downlink: TextView
+    private lateinit var sensors: Sensors
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connectivityManager = activity?.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        nc = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork) as NetworkCapabilities
-        sensorManager =  activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE)
-        magneticFieldSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        sensors = (this.activity as MainActivity).getSensors();
     }
 
     override fun onStart() {
@@ -63,50 +49,32 @@ class AnalyticsFragment : DialogFragment(), SensorEventListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         magneticField = view.findViewById(R.id.tvMagneticField)
-        pressure = view.findViewById(R.id.tvPressure)
+        steps = view.findViewById(R.id.tvSteps)
         battery = view.findViewById(R.id.tvBattery)
         uplink = view.findViewById(R.id.tvUplink)
         downlink = view.findViewById(R.id.tvDownlink)
-        if (pressureSensor == null){
+        sensors.magneticField.observe(this, Observer {
+            magneticField.text = "Magnetic Field:$it μT"
+        })
+        sensors.steps.observe(this, Observer {
+            steps.text = "Number of steps:$it"
+        })
+       /* if (pressureSensor == null){
             pressure.text = "Pressure not available"
         }
         if (magneticFieldSensor == null){
             magneticField.text = "Magnetic field not available"
         }
+        */
 
-        uplink.text = "Uplink: " + (nc.linkUpstreamBandwidthKbps/1000).toString()  + " Mbps"
-        downlink.text = "Downlink: " + (nc.linkDownstreamBandwidthKbps/1000).toString() + " Mbps"
+       // uplink.text = "Uplink: " + (nc.linkUpstreamBandwidthKbps/1000).toString()  + " Mbps"
+       // downlink.text = "Downlink: " + (nc.linkDownstreamBandwidthKbps/1000).toString() + " Mbps"
     }
 
-    override fun onSensorChanged(event: SensorEvent) {
-        when (event.sensor.type){
-            Sensor.TYPE_MAGNETIC_FIELD -> {
-                val value = event.values[0]
-                magneticField.text = "Magnetic field " + value.toString() + " μT"
-            }
-            Sensor.TYPE_PRESSURE ->{
-                val value = event.values[0]
-                pressure.text = "Pressure " + value.toString() + " mbar"
-            }
-        }
-
+    override fun onDestroy() {
+        super.onDestroy()
+        sensors.magneticField.removeObservers(this)
+        sensors.steps.removeObservers(this)
     }
-
-    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-        sensorManager.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_NORMAL)
-        sensorManager.registerListener(this, magneticFieldSensor, SensorManager.SENSOR_DELAY_NORMAL)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        sensorManager.unregisterListener(this)
-    }
-
-
 }
 

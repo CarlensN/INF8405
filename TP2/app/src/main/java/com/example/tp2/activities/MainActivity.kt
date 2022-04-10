@@ -14,9 +14,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -25,6 +23,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tp2.classes.Sensors
 import com.example.tp2.fragments.AnalyticsFragment
 import com.example.tp2.fragments.ProfileFragment
 import com.example.tp2.models.CustomPair
@@ -32,14 +31,12 @@ import com.example.tp2.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
-import com.google.firebase.database.core.utilities.encoding.CustomClassMapper
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
-import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
@@ -88,7 +85,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private var databaseService = DatabaseService()
     private var currentUser: User = User()
 
+    //sensors
+    private lateinit var sensors:Sensors
 
+
+    fun getSensors():Sensors{
+        return sensors
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,6 +123,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         initDialog()
         setBluetoothAdapter()
         handlePermissions()
+        sensors = Sensors(this)
+
     }
 
     private fun setCurrentUser() {
@@ -458,7 +463,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun convertDrawableToBitmap(id: Int): Bitmap? {
-        val sourceDrawable = AppCompatResources.getDrawable(this,id) ?: return null
+        val sourceDrawable = resources.getDrawable(id) ?: return null
         return if (sourceDrawable is BitmapDrawable) {
             sourceDrawable.bitmap
         } else {
@@ -474,6 +479,16 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             drawable.draw(canvas)
             bitmap
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sensors.onResume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensors.onPause()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
