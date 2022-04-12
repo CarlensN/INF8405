@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.Button
@@ -43,6 +44,10 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.math.abs
 
 
@@ -105,14 +110,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         adapter = DeviceAdapter{ position ->  onRecyclerViewItemClick(position)}
         recyclerView.adapter = adapter
         mapView = findViewById<View>(R.id.mapView) as MapView
-        btnSwapTheme = findViewById(R.id.btnSwapTheme)
         btnShowProfile = findViewById(R.id.btnShowProfile)
         btnShowAnalytics = findViewById(R.id.showStats)
         btnShowProfile.setOnClickListener {
             displayProfileFragment()
-        }
-        btnSwapTheme.setOnClickListener {
-            swapTheme()
         }
         btnShowAnalytics.setOnClickListener {
             displayAnalytics()
@@ -157,7 +158,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         //dialog.show(supportFragmentManager, "profile")
     }
 
-    private fun swapTheme() {
+    public fun swapTheme() {
         val isDarkModeOn = sharedPreferences.getBoolean(ISDARKMODEON, false)
         if (isDarkModeOn){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) //light mode
@@ -170,6 +171,18 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             editor.commit()
         }
     }
+
+    public fun setLocale(localeName: String) {
+        val locale = Locale(localeName)
+        val res = resources
+        val dm = res.displayMetrics
+        val conf = res.configuration
+        conf.setLocale(locale)
+        res.updateConfiguration(conf, dm)
+        Log.d("locale", locale.displayLanguage)
+        recreate()
+    }
+
 
     private fun initDialog() {
         deviceDialog = Dialog(this)
