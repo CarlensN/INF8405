@@ -54,10 +54,10 @@ class AnalyticsFragment : DialogFragment(){
         uplink = view.findViewById(R.id.tvUplink)
         downlink = view.findViewById(R.id.tvDownlink)
         sensors.magneticField.observe(this, Observer {
-            magneticField.text = "Magnetic Field:$it μT"
+            magneticField.text = getString(R.string.magneticField)+"$it μT"
         })
         sensors.steps.observe(this, Observer {
-            steps.text = "Number of steps:$it"
+            steps.text = getString(R.string.numberSteps) + "$it"
         })
        /* if (pressureSensor == null){
             pressure.text = "Pressure not available"

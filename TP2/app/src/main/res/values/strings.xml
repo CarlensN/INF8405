@@ -10,5 +10,10 @@
     <string name="back">Back</string>
     <string name="logout">Logout</string>
     <string name="welcome">Welcome</string>
+    <string name="magneticField">Magnetic Field:</string>
+    <string name="numberSteps">Number of Steps:</string>
+    <string name="battery_consumption">Battery Consumption:</string>
+    <string name="uplink">Uplink:</string>
+    <string name="downlink">Downlink:</string>
 
 </resources>

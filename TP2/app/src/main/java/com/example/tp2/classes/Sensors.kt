@@ -47,7 +47,9 @@ class Sensors(activity:Activity) : SensorEventListener {
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
             when (event.sensor.type){
-
+                Sensor.TYPE_MAGNETIC_FIELD -> {
+                    magneticField.value = event.values[0]
+                }
                 Sensor.TYPE_STEP_DETECTOR -> {
                     currentSteps++
                     //steps.setValue(event.values[0].toInt())
