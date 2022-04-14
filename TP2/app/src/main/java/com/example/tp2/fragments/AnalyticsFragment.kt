@@ -1,6 +1,8 @@
 package com.example.tp2.fragments
 
 import android.app.Dialog
+import android.content.Context.CONNECTIVITY_SERVICE
+import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
@@ -17,6 +19,7 @@ import com.example.tp2.classes.Sensors
 
 
 class AnalyticsFragment : DialogFragment(){
+    private lateinit var connectivityManager: ConnectivityManager
     private lateinit var nc: NetworkCapabilities
     private lateinit var magneticField: TextView
     private lateinit var steps: TextView
@@ -28,7 +31,9 @@ class AnalyticsFragment : DialogFragment(){
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sensors = (this.activity as MainActivity).getSensors();
+        sensors = (this.activity as MainActivity).getSensors()
+        connectivityManager = activity?.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        nc = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork) as NetworkCapabilities
     }
 
     override fun onStart() {
@@ -59,16 +64,11 @@ class AnalyticsFragment : DialogFragment(){
         sensors.steps.observe(this, Observer {
             steps.text = getString(R.string.numberSteps) + "$it"
         })
-       /* if (pressureSensor == null){
-            pressure.text = "Pressure not available"
-        }
-        if (magneticFieldSensor == null){
-            magneticField.text = "Magnetic field not available"
-        }
-        */
 
-       // uplink.text = "Uplink: " + (nc.linkUpstreamBandwidthKbps/1000).toString()  + " Mbps"
-       // downlink.text = "Downlink: " + (nc.linkDownstreamBandwidthKbps/1000).toString() + " Mbps"
+
+        uplink.text = getString(R.string.uplink) + (nc.linkUpstreamBandwidthKbps/1000).toString()  + " Mbps"
+        downlink.text = getString(R.string.downlink) + (nc.linkDownstreamBandwidthKbps/1000).toString()  + " Mbps"
+        battery.text = getString(R.string.battery_consumption) + (this.activity as MainActivity).getBatteryUsage() + "%"
     }
 
     override fun onDestroy() {
@@ -76,5 +76,6 @@ class AnalyticsFragment : DialogFragment(){
         sensors.magneticField.removeObservers(this)
         sensors.steps.removeObservers(this)
     }
+
 }
 

@@ -45,9 +45,6 @@ import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 import kotlin.math.abs
 
 
@@ -92,10 +89,16 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
     //sensors
     private lateinit var sensors:Sensors
-
+    private var batteryUsage: Int = 0
+    private var applicationJustLaunched: Boolean = true
+    private var startingBatteryLevel: Int = 0
 
     fun getSensors():Sensors{
         return sensors
+    }
+
+    fun getBatteryUsage() : Int{
+        return batteryUsage
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,7 +128,19 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         setBluetoothAdapter()
         handlePermissions()
         sensors = Sensors(this)
+        this.registerReceiver(mBatInfoReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    }
 
+    private val mBatInfoReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(arg0: Context?, intent: Intent) {
+            val level = intent.getIntExtra("level", 0)
+            if (applicationJustLaunched){
+                startingBatteryLevel = level
+                applicationJustLaunched = false
+            }
+
+            batteryUsage = startingBatteryLevel - level
+        }
     }
 
     private fun setCurrentUser() {

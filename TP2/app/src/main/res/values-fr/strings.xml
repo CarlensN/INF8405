@@ -13,7 +13,7 @@
     <string name="welcome">Bienvenue</string>
     <string name="magneticField">Champ magnétique:</string>
     <string name="numberSteps">Nombre de pas:</string>
-    <string name="battery_consumption">Consommation de batterie:</string>
+    <string name="battery_consumption">Consommation de la batterie:</string>
     <string name="uplink">Téléversement:</string>
     <string name="downlink">Téléchargement:</string>
 </resources>

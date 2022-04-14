@@ -24,20 +24,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:text="Magnetic Field"
         android:textColor="@color/textColor"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/tvSteps"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Temperature" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvSteps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Steps:"
+        android:text="@string/numberSteps"
         android:textColor="@color/textColor"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/tvBattery"
