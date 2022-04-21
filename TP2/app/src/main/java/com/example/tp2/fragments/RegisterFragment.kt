@@ -45,7 +45,6 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var databaseService = DatabaseService()
         mAuth = FirebaseAuth.getInstance()
         username = view.findViewById(R.id.username_editText)
         password = view.findViewById(R.id.password_editText)
@@ -61,12 +60,6 @@ class RegisterFragment : Fragment() {
             }
         }
         btnRegister.setOnClickListener {
-            /*val user = User(username.text.toString(), password.text.toString(), imageEncoded)
-            databaseService.add(user).addOnSuccessListener {
-                Toast.makeText(this.context, "Record is inserted", Toast.LENGTH_LONG).show()
-            }.addOnFailureListener {
-                Toast.makeText(this.context, "Couldn't insert record", Toast.LENGTH_LONG).show()
-            }*/
             registerUser()
         }
     }

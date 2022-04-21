@@ -53,7 +53,7 @@ class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
     }
 
     @JvmName("setDeviceList1")
-    public fun setDeviceList(list : ArrayList<Device>){
+    fun setDeviceList(list : ArrayList<Device>){
         devices = list
         notifyDataSetChanged()
     }
@@ -61,9 +61,5 @@ class DeviceAdapter(private val onItemClicked: (position: Int) -> Unit) :
     fun clear(){
         devices.clear()
         notifyDataSetChanged()
-    }
-
-    public fun addDevice(device: Device){
-
     }
 }

@@ -57,7 +57,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private lateinit var pointAnnotationManager:PointAnnotationManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private var deviceList: ArrayList<Device> = ArrayList()
-    private lateinit var btnSwapTheme: Button
     private lateinit var btnShowProfile: Button
     private lateinit var btnShowAnalytics: Button
     private lateinit var adapter: DeviceAdapter
@@ -163,17 +162,15 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         val dialog = ProfileFragment()
         dialog.isCancelable = true
         Handler(Looper.getMainLooper()).postDelayed({ dialog.show(supportFragmentManager, "profile") }, 500)
-        //dialog.show(supportFragmentManager, "profile")
     }
 
     private fun displayAnalytics(){
         val dialog = AnalyticsFragment()
         dialog.isCancelable = true
         Handler(Looper.getMainLooper()).postDelayed({ dialog.show(supportFragmentManager, "analytics") }, 500)
-        //dialog.show(supportFragmentManager, "profile")
     }
 
-    public fun swapTheme() {
+    fun swapTheme() {
         val isDarkModeOn = sharedPreferences.getBoolean(ISDARKMODEON, false)
         if (isDarkModeOn){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) //light mode
@@ -187,7 +184,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         }
     }
 
-    public fun setLocale(localeName: String) {
+    fun setLocale(localeName: String) {
         val locale = Locale(localeName)
         val res = resources
         val dm = res.displayMetrics
@@ -251,7 +248,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
                 break
             }
         }
-        //saveListToPreferences(favoriteList)
     }
 
     private fun initFavorites(){
@@ -260,22 +256,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         for(device in deviceList) {
             prepareAnnotationMarker(device)
         }
-        /*reference.child(userID).addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val userProfile = snapshot.getValue(User::class.java)
-
-                if (userProfile != null){
-                    deviceList = userProfile.devices
-                    adapter.setDeviceList(deviceList)
-                    for(device in deviceList) {
-                        prepareAnnotationMarker(device)
-                    }
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(baseContext, "Something wrong happened!", Toast.LENGTH_LONG).show()
-            }
-        })*/
     }
 
     private fun showModal(device: Device){
@@ -443,7 +423,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             }
             true
         })
-        //initFavorites()
     }
 
     private fun initLocationComponent() {
@@ -495,7 +474,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         return if (sourceDrawable is BitmapDrawable) {
             sourceDrawable.bitmap
         } else {
-// copying drawable object to not manipulate on the same reference
             val constantState = sourceDrawable.constantState ?: return null
             val drawable = constantState.newDrawable().mutate()
             val bitmap: Bitmap = Bitmap.createBitmap(
@@ -511,7 +489,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
 
     override fun onResume() {
         super.onResume()
-        sensors.onResume(this)
+        sensors.onResume()
     }
 
     override fun onPause() {

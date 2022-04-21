@@ -13,16 +13,15 @@ import androidx.lifecycle.MutableLiveData
 import kotlin.properties.Delegates
 
 class Sensors(activity:Activity) : SensorEventListener {
-    private lateinit var sensorManager: SensorManager
+    private var sensorManager: SensorManager
     private var pressureSensor: Sensor? = null
     private var magneticFieldSensor: Sensor? = null
     private var stepDetector: Sensor? = null
-    private lateinit var connectivityManager: ConnectivityManager
+    private var connectivityManager: ConnectivityManager
 
     val steps: MutableLiveData<Int> = MutableLiveData()
     val magneticField: MutableLiveData<Number> = MutableLiveData()
     var currentSteps = 0;
-    //        nc = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork) as NetworkCapabilities
 
     init {
         connectivityManager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -32,7 +31,7 @@ class Sensors(activity:Activity) : SensorEventListener {
         stepDetector = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
     }
 
-    fun onResume(activity: Activity){
+    fun onResume() {
         sensorManager.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_NORMAL)
         sensorManager.registerListener(this, magneticFieldSensor, SensorManager.SENSOR_DELAY_NORMAL)
         sensorManager.registerListener(this, stepDetector, SensorManager.SENSOR_DELAY_NORMAL)
@@ -52,7 +51,6 @@ class Sensors(activity:Activity) : SensorEventListener {
                 }
                 Sensor.TYPE_STEP_DETECTOR -> {
                     currentSteps++
-                    //steps.setValue(event.values[0].toInt())
                     steps.setValue(currentSteps)
                 }
             }
