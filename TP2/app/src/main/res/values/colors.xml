@@ -19,7 +19,7 @@
     <color name="grey_pale">#ededed</color>
 
     <!--Light Mode-->
-    <color name="backgroundColor">#53bdff</color>
+    <color name="backgroundColor">#ffffff</color>
     <color name="messageIconBackground">#008dcc</color>
     <color name="messageIconColor">#ffffff</color>
     <color name="buttonColor">#0000ff</color>

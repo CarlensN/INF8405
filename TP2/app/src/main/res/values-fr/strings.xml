@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TP2</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoicnlsb2ciLCJhIjoiY2wwMzV6ODM2MHpneDNpcWcwdnZsd2FqaSJ9.KZ3tA7KMZ08xWSRtXhDQyw</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="stats">Statistiques</string>
+    <string name="profile">Profil</string>
+    <string name="swap_theme">Changer de thème</string>
+    <string name="change_language">EN</string>
+    <string name="back">Retour</string>
+    <string name="logout">Déconnexion</string>
+    <string name="welcome">Bienvenue</string>
+    <string name="magneticField">Champ magnétique:</string>
+    <string name="numberSteps">Nombre de pas:</string>
+    <string name="battery_consumption">Consommation de la batterie:</string>
+    <string name="uplink">Téléversement:</string>
+    <string name="downlink">Téléchargement:</string>
+</resources>

@@ -13,10 +13,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -25,26 +24,27 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tp2.classes.Sensors
+import com.example.tp2.fragments.AnalyticsFragment
 import com.example.tp2.fragments.ProfileFragment
 import com.example.tp2.models.CustomPair
 import com.example.tp2.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
-import com.google.firebase.database.core.utilities.encoding.CustomClassMapper
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
-import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import java.util.*
 import kotlin.math.abs
 
 
@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private var deviceList: ArrayList<Device> = ArrayList()
     private lateinit var btnSwapTheme: Button
     private lateinit var btnShowProfile: Button
+    private lateinit var btnShowAnalytics: Button
     private lateinit var adapter: DeviceAdapter
     private lateinit var recyclerView: RecyclerView
     private var currentPosition: CustomPair = CustomPair(0.0,0.0)
@@ -86,7 +87,19 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     private var databaseService = DatabaseService()
     private var currentUser: User = User()
 
+    //sensors
+    private lateinit var sensors:Sensors
+    private var batteryUsage: Int = 0
+    private var applicationJustLaunched: Boolean = true
+    private var startingBatteryLevel: Int = 0
 
+    fun getSensors():Sensors{
+        return sensors
+    }
+
+    fun getBatteryUsage() : Int{
+        return batteryUsage
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,13 +113,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         adapter = DeviceAdapter{ position ->  onRecyclerViewItemClick(position)}
         recyclerView.adapter = adapter
         mapView = findViewById<View>(R.id.mapView) as MapView
-        btnSwapTheme = findViewById(R.id.btnSwapTheme)
         btnShowProfile = findViewById(R.id.btnShowProfile)
+        btnShowAnalytics = findViewById(R.id.showStats)
         btnShowProfile.setOnClickListener {
             displayProfileFragment()
         }
-        btnSwapTheme.setOnClickListener {
-            swapTheme()
+        btnShowAnalytics.setOnClickListener {
+            displayAnalytics()
         }
         setCurrentUser()
         map = mapView.getMapboxMap()
@@ -114,6 +127,20 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         initDialog()
         setBluetoothAdapter()
         handlePermissions()
+        sensors = Sensors(this)
+        this.registerReceiver(mBatInfoReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    }
+
+    private val mBatInfoReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(arg0: Context?, intent: Intent) {
+            val level = intent.getIntExtra("level", 0)
+            if (applicationJustLaunched){
+                startingBatteryLevel = level
+                applicationJustLaunched = false
+            }
+
+            batteryUsage = startingBatteryLevel - level
+        }
     }
 
     private fun setCurrentUser() {
@@ -139,7 +166,14 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
         //dialog.show(supportFragmentManager, "profile")
     }
 
-    private fun swapTheme() {
+    private fun displayAnalytics(){
+        val dialog = AnalyticsFragment()
+        dialog.isCancelable = true
+        Handler(Looper.getMainLooper()).postDelayed({ dialog.show(supportFragmentManager, "analytics") }, 500)
+        //dialog.show(supportFragmentManager, "profile")
+    }
+
+    public fun swapTheme() {
         val isDarkModeOn = sharedPreferences.getBoolean(ISDARKMODEON, false)
         if (isDarkModeOn){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) //light mode
@@ -152,6 +186,18 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             editor.commit()
         }
     }
+
+    public fun setLocale(localeName: String) {
+        val locale = Locale(localeName)
+        val res = resources
+        val dm = res.displayMetrics
+        val conf = res.configuration
+        conf.setLocale(locale)
+        res.updateConfiguration(conf, dm)
+        Log.d("locale", locale.displayLanguage)
+        recreate()
+    }
+
 
     private fun initDialog() {
         deviceDialog = Dialog(this)
@@ -445,7 +491,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
     }
 
     private fun convertDrawableToBitmap(id: Int): Bitmap? {
-        val sourceDrawable = AppCompatResources.getDrawable(this,id) ?: return null
+        val sourceDrawable = resources.getDrawable(id) ?: return null
         return if (sourceDrawable is BitmapDrawable) {
             sourceDrawable.bitmap
         } else {
@@ -461,6 +507,16 @@ class MainActivity : AppCompatActivity(), PermissionsListener{
             drawable.draw(canvas)
             bitmap
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sensors.onResume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensors.onPause()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
