@@ -11,9 +11,9 @@
     <string name="back">Retour</string>
     <string name="logout">Déconnexion</string>
     <string name="welcome">Bienvenue</string>
-    <string name="magneticField">Champ magnétique:</string>
-    <string name="numberSteps">Nombre de pas:</string>
-    <string name="battery_consumption">Consommation de la batterie:</string>
-    <string name="uplink">Téléversement:</string>
-    <string name="downlink">Téléchargement:</string>
+    <string name="magneticField">Champ magnétique: </string>
+    <string name="numberSteps">Nombre de pas: </string>
+    <string name="battery_consumption">Consommation de la batterie: </string>
+    <string name="uplink">Liaison montante: </string>
+    <string name="downlink">Liaise descendante: </string>
 </resources>

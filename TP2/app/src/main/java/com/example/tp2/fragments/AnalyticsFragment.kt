@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.TrafficStats
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -65,9 +66,15 @@ class AnalyticsFragment : DialogFragment(){
             steps.text = getString(R.string.numberSteps) + "$it"
         })
 
+        val packageManager = context?.packageManager
+        val info = packageManager?.getApplicationInfo("com.example.tp2", 0)
+        val uid = info?.uid
 
-        uplink.text = getString(R.string.uplink) + (nc.linkUpstreamBandwidthKbps/1000).toString()  + " Mbps"
-        downlink.text = getString(R.string.downlink) + (nc.linkDownstreamBandwidthKbps/1000).toString()  + " Mbps"
+        val received = uid?.let { TrafficStats.getUidRxBytes(it) }
+        val transmitted = uid?.let { TrafficStats.getUidTxBytes(it) }
+
+        uplink.text = getString(R.string.uplink) + (received?.div(1000)).toString() + " KB"
+        downlink.text = getString(R.string.downlink) + (transmitted?.div(1000)).toString() + " KB"
         battery.text = getString(R.string.battery_consumption) + (this.activity as MainActivity).getBatteryUsage() + "%"
     }
 
@@ -76,6 +83,5 @@ class AnalyticsFragment : DialogFragment(){
         sensors.magneticField.removeObservers(this)
         sensors.steps.removeObservers(this)
     }
-
 }
 
